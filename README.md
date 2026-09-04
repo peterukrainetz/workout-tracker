@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Workout Tracker
 
-## Getting Started
+A fullstack workout tracking web app built to help lifters log workouts, plan future sessions, and track progress over time — with built-in tools like a one-rep max (1RM) calculator. Designed to be flexible enough to fit however you personally like to train.
 
-First, run the development server:
+**Live demo:** [workout-tracker-eta-snowy.vercel.app](https://workout-tracker-eta-snowy.vercel.app/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+
+- ✅ User authentication (sign up, log in, log out)
+- ✅ Secure, per-user data access (Row Level Security)
+- 🔲 Workout logging (sets, reps, weight)
+- 🔲 Workout history view
+- 🔲 1RM (one-rep max) calculator
+- 🔲 Workout planning / templates
+- 🔲 Custom exercise creation
+
+## Tech Stack
+
+- **Frontend:** [Next.js](https://nextjs.org/) (App Router) + React + TypeScript
+- **Styling:** Tailwind CSS
+- **Backend:** Next.js API routes
+- **Database & Auth:** [Supabase](https://supabase.com/) (PostgreSQL)
+- **Hosting:** [Vercel](https://vercel.com/)
+
+## Data Model
+
+```
+exercises          (id, name, category, user_id [nullable — null = shared default])
+logged_workouts    (id, user_id, date, notes)
+logged_sets        (id, logged_workout_id, exercise_id, set_number, weight, reps)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- `exercises` supports both shared default exercises and user-created custom ones.
+- `logged_workouts` and `logged_sets` are scoped to the logged-in user via Row Level Security — users can only ever see or edit their own data.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Running Locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/peterukrainetz/workout-tracker.git
+   cd workout-tracker
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a `.env.local` file in the project root with your own Supabase project credentials:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+   ```
+4. Run the dev server:
+   ```bash
+   npm run dev
+   ```
+5. Open [http://localhost:3000](http://localhost:3000).
 
-## Learn More
+## Project Status
 
-To learn more about Next.js, take a look at the following resources:
+This project is under active development as a learning project and portfolio piece. Progress updates are posted on [LinkedIn](#).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## About
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built by [Peter Ukrainetz](https://github.com/peterukrainetz) as a way to learn fullstack web development (Next.js, React, Supabase) while building something genuinely useful for tracking lifting progress.
