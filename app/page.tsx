@@ -24,6 +24,7 @@ export default function Home() {
       {email ? (
         <>
           <p>Logged in as {email}</p>
+          <Link href="/log">Log a Set</Link>
           <button onClick={handleLogout}>Log Out</button>
         </> 
       ) : (
