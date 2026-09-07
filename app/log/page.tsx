@@ -3,18 +3,27 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { React } from 'next/dist/server/route-modules/app-page/vendored/rsc/entrypoints'
+import { useRouter } from 'next/navigation'
 
 type Exercise = {
     id: number
     name: string
 }
 
-export default function LogPage() {
+type DraftSet = {
+    id: string
+    exercise_id: number | null
+    weight: number | null
+    reps: number | null
+}
+
+export default function CreateWorkoutPage() {
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+    const [name, setName] = useState('Untitled')
+    const [draftSets, setDraftSets] = useState<DraftSet[]>([])
     const [exercises, setExercises] = useState<Exercise[]>([])
-    const [exerciseId, setExerciseId] = useState('')
-    const [weight, setWeight] = useState('')
-    const [reps, setReps] = useState('')
-    const [message, setMessage] = useState('')
+    const [error, setError] = useState('')
+    const router = useRouter()
 
     useEffect(() => {
         supabase.from('exercises').select('id, name').then(({ data }) => {
@@ -22,81 +31,148 @@ export default function LogPage() {
         })
     }, [])
 
-    const handleLogSet = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setMessage('')
+    const handleAddRow = () => {
+        const newRow: DraftSet = {
+            id: crypto.randomUUID(),
+            exercise_id: null,
+            weight: null,
+            reps: null
+        }
 
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-            setMessage('You must be logged in to create a workout')
+        setDraftSets([...draftSets, newRow])
+    }
+
+    const handleSaveWorkout = async () => {
+        // Store user id
+        const { data: { user } } = await supabase.auth.getUser()
+
+        // If user is not signed in, display error and exit
+        if (!user)
+        {
+            setError('You must be logged in to create a workout')
             return
         }
 
-        const today = new Date().toISOString().split('T')[0]
-
-        let { data: workout } = await supabase
+        // Add new row to workout table (NOT logged_sets yet)
+        const { data: workout, error: insertError } = await supabase
             .from('logged_workouts')
+            .insert({ user_id: user.id, date, name })
             .select('id')
-            .eq('user_id', user.id)
-            .gte('date', `${today}T00:00:00`)
-            .lte('date', `${today}T23:59:59`)
-            .maybeSingle()
+            .single()
 
-        if (!workout) {
-            const { data: newWorkout, error: workoutError } = await supabase
-                .from('logged_workouts')
-                .insert({ user_id: user.id })
-                .select('id')
-                .single()
-
-            if (workoutError) {
-                setMessage(workoutError.message)
-                return
-            }
-            workout = newWorkout
+        if (insertError)
+        {
+            setError(insertError.message)
+            return
         }
 
-        const { error: setError } = await supabase.from('logged_sets').insert({
-            logged_workout_id: workout.id,
-            exercise_id: Number(exerciseId),
-            weight: Number(weight),
-            reps: Number(reps),
-            set_number: 1,
+        // Map all set rows to a new variable with proper values
+        const counts: Record<string, number> = {}
+        const rows = draftSets.map((set) => {
+            counts[set.exercise_id!] = (counts[set.exercise_id!] ?? 0) + 1
+
+            return {
+                logged_workout_id: workout.id,
+                exercise_id: set.exercise_id,
+                weight: set.weight,
+                reps: set.reps,
+                set_number: counts[set.exercise_id!],
+            }
         })
 
-        if (setError) {
-            setMessage(setError.message)
-        } else {
-            setMessage('Set logged successfully')
-            setWeight('')
-            setReps('')
+        // Insert all rows into supabase
+        const { error : saveError } = await supabase.from('logged_sets').insert(rows)
+
+        if (saveError)
+        {
+            setError(saveError.message)
+            return
         }
+
+        router.push('/')
     }
 
     return (
         <div style={{ padding: '2rem', maxWidth: '400px' }}>
-            <h1>Log a Set</h1>
-            <form onSubmit={handleLogSet}>
-                <div>
-                    <label>Exercise</label>
-                    <select value={exerciseId} onChange={(e) => setExerciseId(e.target.value)} required>
-                        <option value="">Select an exercise</option>
-                        {exercises.map((ex) => (
-                            <option key={ex.id} value={ex.id}>{ex.name}</option>
-                        ))}
-                    </select>
-                </div>
-                <div>
-                    <label>Weight</label>
-                    <input type="number" value={weight} onChange={(e) => setWeight(e.target.value)} required />
-                </div>
-                <div>
-                    <label>Reps</label>
-                    <input type="number" value={reps} onChange={(e) => setReps(e.target.value)} required />
-                </div>
-                {message && <p>{message}</p>}
-                <button type="submit">Log Set</button>
-            </form>
+            <h1>New Workout</h1>
+            <div>
+                <label>Date</label>
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
+            </div>
+            <div>
+                <label>Name</label>
+                <input type="string" value={name} onChange={(e) => setName(e.target.value)} required />
+            </div>
+            <p>{draftSets.length} sets added</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Exercise</th>
+                        <th>Weight</th>
+                        <th>Reps</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {draftSets.map((row) => (
+                        <tr key={row.id}>
+                            <td>
+                                <select
+                                    value={row.exercise_id ?? ''}
+                                    onChange={(e) =>
+                                        setDraftSets(
+                                            draftSets.map((r) => 
+                                                r.id === row.id ? { ...r, exercise_id: Number(e.target.value) } : r
+                                            )
+                                        )
+                                    }
+                                >
+                                    <option value="">Choose exercise</option>
+                                    {exercises.map((ex) => (
+                                        <option key={ex.id} value={ex.id}>{ex.name}</option>
+                                    ))}
+                                </select>
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    value={row.weight ?? ''}
+                                    onChange={(e) => 
+                                        setDraftSets(
+                                            draftSets.map((r) => 
+                                                r.id === row.id ? { ...r, weight: Number(e.target.value) } : r
+                                            )
+                                        )
+                                    }
+                                />
+                            </td>
+                            <td>
+                                <input
+                                    type="number"
+                                    value={row.reps ?? ''}
+                                    onChange={(e) => 
+                                        setDraftSets(
+                                            draftSets.map((r) => 
+                                                r.id === row.id ? { ...r, reps: Number(e.target.value) } : r
+                                            )
+                                        )
+                                    }
+                                />
+                            </td>
+                            <td>
+                                <button onClick={() => setDraftSets(draftSets.filter((r) => r.id !== row.id))}>
+                                    Remove
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <button onClick={handleAddRow}>+ Add Set</button>
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            <div>
+                <button onClick={handleSaveWorkout}>Save Workout</button>
+            </div>
         </div>
     )
 }
