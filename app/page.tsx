@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import Sidebar from '@/components/sidebar'
 import Link from 'next/link'
+import { useAuth } from '@/context/AuthContext'
+import AppShell from '@/components/AppShell'
 
 type Workout = {
   id: number
@@ -18,29 +19,24 @@ type Workout = {
 }
 
 export default function Home() {
-  const [email, setEmail] = useState<string | null>(null)
   const [workouts, setWorkouts] = useState<Workout[]>([])
+  const { user } = useAuth()
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      setEmail(data.user?.email ?? null)
-  })
-
-  supabase
-    .from('logged_workouts')
-    .select('id, date, name, logged_sets(id, weight, reps, exercises(name))')
-    .order('date', { ascending: false})
-    .limit(3)
-    .then(({ data }) => {
-      if (data) setWorkouts(data as unknown as Workout[])
-    })
-}, [])
+    supabase
+      .from('logged_workouts')
+      .select('id, date, name, logged_sets(id, weight, reps, exercises(name))')
+      .order('date', { ascending: false})
+      .limit(3)
+      .then(({ data }) => {
+        if (data) setWorkouts(data as unknown as Workout[])
+      })
+  }, [])
 
   return (
-    <div style={{ display : 'flex' }}>
-      <Sidebar />
-      <div style={{ padding: '2rem', flex: 1 }}>
-        {email ? <h1>Hello, {email}!</h1> : <h1>You are not signed in.</h1>}
+    <AppShell>
+      <div style={{ padding: '2rem' }}>
+        {user ? <h1>Hello, {user.email}!</h1> : <h1>You are not signed in.</h1>}
 
         <h2>Recent Workouts</h2>
         {workouts.length === 0 && <p>No recent workouts. Add a workout using the sidebar.</p>}
@@ -55,11 +51,11 @@ export default function Home() {
             ))}
           </div>
         ))}
-        <p><Link href="/history">See all</Link></p>
+        <p><Link href="/workouts">See all</Link></p>
 
         <h2>Upcoming Workouts</h2>
         <p>No upcoming workouts. Add a workout using the sidebar.</p>
       </div>
-    </div>
+    </AppShell>
   )
 }

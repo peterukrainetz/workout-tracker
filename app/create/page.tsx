@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
+import AppShell from '@/components/AppShell'
 
 type Exercise = {
     id: number
@@ -93,9 +93,8 @@ export default function CreateWorkoutPage() {
     }
 
     return (
-        <div style={{ display: 'flex' }}>
-            <Sidebar />
-            <div style={{ padding: '2rem', maxWidth: '400px', flex: 1 }}>
+        <AppShell>
+            <div style={{ padding: '2rem', maxWidth: '400px' }}>
                 <h1>New Workout</h1>
                 <div>
                     <label>Date</label>
@@ -176,6 +175,6 @@ export default function CreateWorkoutPage() {
                     <button onClick={handleSaveWorkout}>Save Workout</button>
                 </div>
             </div>
-        </div>
+        </AppShell>
     )
 }

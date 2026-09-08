@@ -2,42 +2,65 @@
 
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useAuth } from '@/context/AuthContext'
 
-export default function Sidebar() {
-    const [isSignedIn, setIsSignedIn] = useState(false)
-    const router = useRouter();
+type SidebarProps = {
+    isCollapsed: boolean
+    setIsCollapsed: (value: boolean) => void
+}
 
-    useEffect(() => {
-        supabase.auth.getUser().then(({ data: { user } }) => {
-        setIsSignedIn(!!user)
-        })
-    }, [])
+export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
+    const { user } = useAuth()
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
-        window.location.reload()
     }
 
     return (
-        <nav style={{ width: '200px', padding: '1rem', borderRight: '1px solid #333', display: 'flex', flexDirection: 'column', height: '100vh' }}>
-            {!isSignedIn && <Link href="/login">Sign In</Link>}
+        <nav style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            height: '100vh',
+            width: isCollapsed ? '60px' : '200px',
+            padding: '1rem',
+            borderRight: '1px solid #333',
+            display: 'flex',
+            flexDirection: 'column',
+        }}>
+            <button onClick={() => setIsCollapsed(!isCollapsed)} style={{
+                position: 'absolute',
+                top: '1rem',
+                right: '-12px',
+                width: '24px',
+                height: '24px',
+                borderRadius: '50%',
+                border: '1px solid #333',
+                background: '#111'
+            }}
+            >
+                {isCollapsed ? '→' : '←'}
+            </button>
 
-            <ul style={{ listStyle: 'none', padding: 0 }}>
-                <li><Link href="/log">+ Create Workout</Link></li>
-                <li><Link href="/">Workouts</Link></li>
-                <li><Link href="/">Dashboard</Link></li>
-                <li><Link href="/exercises">Exercises</Link></li>
-                <li><Link href="/calendar">Calendar</Link></li>
-                <li><Link href="/goals">Goals</Link></li>
-                <li>Tools</li>
-                <li style={{ paddingLeft: '1rem' }}><Link href="/1rm">1RM Tool</Link></li>
-                <li style={{ paddingLeft: '1rem' }}><Link href="/calculator">Calculator</Link></li>
-                <li style={{ paddingLeft: '1rem' }}><Link href="/timer">Timer</Link></li>
-            </ul>
+            {!user && <Link href="/login">Sign In</Link>}
 
-            {isSignedIn && (
+            {!isCollapsed && (
+                <ul style={{ listStyle: 'none', padding: 0 }}>
+                    <li><Link href="/create">+ Create Workout</Link></li>
+                    <li><Link href="/">Dashboard</Link></li>
+                    <li><Link href="/workouts">Workouts</Link></li>
+                    <li><Link href="/exercises">Exercises</Link></li>
+                    <li><Link href="/calendar">Calendar</Link></li>
+                    <li><Link href="/goals">Goals</Link></li>
+                    <li>Tools</li>
+                    <li style={{ paddingLeft: '1rem' }}><Link href="/1rm">1RM Tool</Link></li>
+                    <li style={{ paddingLeft: '1rem' }}><Link href="/calculator">Calculator</Link></li>
+                    <li style={{ paddingLeft: '1rem' }}><Link href="/timer">Timer</Link></li>
+                </ul>
+            )}
+
+            {user && (
                 <button onClick={handleLogout} style={{ marginTop: 'auto' }}>Sign Out</button>
             )}
         </nav>
