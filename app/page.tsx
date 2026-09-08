@@ -24,7 +24,7 @@ export default function Home() {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       setEmail(data.user?.email ?? null)
-    })
+  })
 
   supabase
     .from('logged_workouts')
@@ -40,7 +40,7 @@ export default function Home() {
     <div style={{ display : 'flex' }}>
       <Sidebar />
       <div style={{ padding: '2rem', flex: 1 }}>
-        <h1>Hello, {email ?? 'user. Please sign in.'}!</h1>
+        {email ? <h1>Hello, {email}!</h1> : <h1>You are not signed in.</h1>}
 
         <h2>Recent Workouts</h2>
         {workouts.length === 0 && <p>No recent workouts. Add a workout using the sidebar.</p>}

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { React } from 'next/dist/server/route-modules/app-page/vendored/rsc/entrypoints'
 import { useRouter } from 'next/navigation'
 
 type Exercise = {
