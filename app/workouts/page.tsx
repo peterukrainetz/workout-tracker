@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import Link from 'next/link'
-import { useAuth } from '@/context/AuthContext'
 import AppShell from '@/components/AppShell'
 
 type Workout = {
@@ -18,16 +17,15 @@ type Workout = {
   }[]
 }
 
-export default function Dashboard() {
+export default function Workouts() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
-  const { user } = useAuth()
 
   useEffect(() => {
+    // Read workout data associated with user
     supabase
       .from('logged_workouts')
       .select('id, date, name, logged_sets(id, weight, reps, exercises(name))')
       .order('date', { ascending: false})
-      .limit(3)
       .then(({ data }) => {
         if (data) setWorkouts(data as unknown as Workout[])
       })
@@ -36,10 +34,8 @@ export default function Dashboard() {
   return (
     <AppShell>
       <div style={{ padding: '2rem' }}>
-        {user ? <h1>Hello, {user.email}!</h1> : <h1>You are not signed in.</h1>}
-
-        <h2>Recent Workouts</h2>
-        {workouts.length === 0 && <p>No recent workouts. Add a workout using the sidebar.</p>}
+        <h1 style={{ marginBottom: '1rem' }}>Workouts</h1>
+        {workouts.length === 0 && <p>No logged workouts. Add a workout using the sidebar.</p>}
         {workouts.map((w) => (
             <div key={w.id} style={{ border: '2px solid #333', borderRadius: '20px', marginBottom: '1rem', maxWidth: '400px' }}>
               <Link href={`/workouts/${w.id}`} style={{ display: 'block', padding: '1rem' }}>
@@ -53,10 +49,6 @@ export default function Dashboard() {
               </Link>
             </div>
         ))}
-        <p><Link href="/workouts">See all</Link></p>
-
-        <h2>Upcoming Workouts</h2>
-        <p>No upcoming workouts. Add a workout using the sidebar.</p>
       </div>
     </AppShell>
   )

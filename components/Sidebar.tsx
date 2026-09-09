@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { useEffect, useState } from 'react'
 import { useAuth } from '@/context/AuthContext'
 
 type SidebarProps = {

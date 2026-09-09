@@ -95,14 +95,18 @@ export default function CreateWorkoutPage() {
     return (
         <AppShell>
             <div style={{ padding: '2rem', maxWidth: '400px' }}>
-                <h1>New Workout</h1>
                 <div>
-                    <label>Date</label>
-                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
+                    <input
+                        type="string"
+                        defaultValue=' New Workout'
+                        style={{ border: '2px dashed #d4d4d4', borderRadius: '8px', padding: '5px'}}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
                 </div>
                 <div>
-                    <label>Name</label>
-                    <input type="string" value={name} onChange={(e) => setName(e.target.value)} required />
+                    <label>Date: </label>
+                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
                 </div>
                 <p>{draftSets.length} sets added</p>
                 <table>
