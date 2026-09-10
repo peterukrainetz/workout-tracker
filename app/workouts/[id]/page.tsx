@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter, useParams, notFound } from 'next/navigation'
 import AppShell from '@/components/AppShell'
 
 type Exercise = {
@@ -19,35 +19,40 @@ type DraftSet = {
 
 export default function CreateWorkoutPage() {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0])
-    const [name, setName] = useState('Untitled')
+    const [name, setName] = useState('New Workout')
+    const [notes, setNotes] = useState('')
     const [draftSets, setDraftSets] = useState<DraftSet[]>([])
     const [exercises, setExercises] = useState<Exercise[]>([])
     const [error, setError] = useState('')
+    const [notFoundState, setNotFoundState] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const router = useRouter()
     const { id } = useParams()
 
+    // Load exercise list
     useEffect(() => {
         supabase.from('exercises').select('id, name').then(({ data }) => {
             if (data) setExercises(data)
         })
     }, [])
 
+    // Load workout info on the form
     useEffect(() => {
         supabase
             .from('logged_workouts')
-            .select('id, date, name, logged_sets(id, exercise_id, weight, reps)')
+            .select('id, date, name, notes, logged_sets(id, exercise_id, weight, reps)')
             .eq('id', id)
             .single()
             .then(({ data, error}) => {
                 if (error) {
-                    setError(error.message)
+                    setNotFoundState(true)
                     setIsLoading(false)
                     return
                 }
 
                 setDate(new Date(data?.date ?? Date.now()).toISOString().split('T')[0])
-                setName(data?.name ?? 'Untitled')
+                setName(data?.name ?? 'Untitled Workout')
+                setNotes(data?.notes ?? '')
                 const mapped = data?.logged_sets.map((s) => ({
                     id: crypto.randomUUID(),
                     exercise_id: s.exercise_id,
@@ -59,6 +64,10 @@ export default function CreateWorkoutPage() {
                 setIsLoading(false)
             })
     },[id])
+
+    if (notFoundState) {
+        notFound()
+    }
 
     const handleAddRow = () => {
         const newRow: DraftSet = {
@@ -85,7 +94,7 @@ export default function CreateWorkoutPage() {
         // Update workout name and date independently from rows
         const { error: updateError } = await supabase
             .from('logged_workouts')
-            .update({ date, name })
+            .update({ date, name, notes })
             .eq('id', id)
 
         if (updateError)
@@ -154,11 +163,11 @@ export default function CreateWorkoutPage() {
                     <h1>Edit Workout</h1>
                     <div>
                         <label>Name: </label>
-                        <input type="string" value={name} onChange={(e) => setName(e.target.value)} required />
+                        <input type='text' value={name} onChange={(e) => setName(e.target.value)} required />
                     </div>
                     <div>
                         <label>Date: </label>
-                        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
+                        <input type='date' value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
                     </div>
                     <p>{draftSets.length} sets added</p>
                     <table>
@@ -184,7 +193,7 @@ export default function CreateWorkoutPage() {
                                                 )
                                             }
                                         >
-                                            <option value="">Choose exercise</option>
+                                            <option value=''>Exercise</option>
                                             {exercises.map((ex) => (
                                                 <option key={ex.id} value={ex.id}>{ex.name}</option>
                                             ))}
@@ -192,7 +201,7 @@ export default function CreateWorkoutPage() {
                                     </td>
                                     <td>
                                         <input
-                                            type="number"
+                                            type='number'
                                             value={row.weight ?? ''}
                                             onChange={(e) => 
                                                 setDraftSets(
@@ -205,7 +214,7 @@ export default function CreateWorkoutPage() {
                                     </td>
                                     <td>
                                         <input
-                                            type="number"
+                                            type='number'
                                             value={row.reps ?? ''}
                                             onChange={(e) => 
                                                 setDraftSets(
@@ -226,6 +235,14 @@ export default function CreateWorkoutPage() {
                         </tbody>
                     </table>
                     <button onClick={handleAddRow}>+ Add Set</button>
+                    <div>
+                        <textarea
+                            placeholder='Notes...'
+                            value={notes}
+                            style={{ width: '500px', border: '2px solid #d4d4d4', borderRadius: '8px', padding: '5px'}}
+                            onChange={(e) => setNotes(e.target.value)}
+                        />
+                    </div>
                     {error && <p style={{ color: 'red' }}>{error}</p>}
                     <div style={{ display: 'flex' }}>
                         <button onClick={handleUpdateWorkout}>Save</button>

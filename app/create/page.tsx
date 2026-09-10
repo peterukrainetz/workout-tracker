@@ -19,7 +19,8 @@ type DraftSet = {
 
 export default function CreateWorkoutPage() {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0])
-    const [name, setName] = useState('Untitled')
+    const [name, setName] = useState('New Workout')
+    const [notes, setNotes] = useState('')
     const [draftSets, setDraftSets] = useState<DraftSet[]>([])
     const [exercises, setExercises] = useState<Exercise[]>([])
     const [error, setError] = useState('')
@@ -56,7 +57,7 @@ export default function CreateWorkoutPage() {
         // Add new row to workout table (NOT logged_sets yet)
         const { data: workout, error: insertError } = await supabase
             .from('logged_workouts')
-            .insert({ user_id: user.id, date, name })
+            .insert({ user_id: user.id, date, name, notes })
             .select('id')
             .single()
 
@@ -81,7 +82,9 @@ export default function CreateWorkoutPage() {
         })
 
         // Insert all rows into supabase
-        const { error : saveError } = await supabase.from('logged_sets').insert(rows)
+        const { error : saveError } = await supabase
+            .from('logged_sets')
+            .insert(rows)
 
         if (saveError)
         {
@@ -97,8 +100,8 @@ export default function CreateWorkoutPage() {
             <div style={{ padding: '2rem', maxWidth: '400px' }}>
                 <div>
                     <input
-                        type="string"
-                        defaultValue=' New Workout'
+                        type='text'
+                        defaultValue='New Workout'
                         style={{ border: '2px dashed #d4d4d4', borderRadius: '8px', padding: '5px'}}
                         onChange={(e) => setName(e.target.value)}
                         required
@@ -106,9 +109,8 @@ export default function CreateWorkoutPage() {
                 </div>
                 <div>
                     <label>Date: </label>
-                    <input type="date" value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
+                    <input type='date' value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
                 </div>
-                <p>{draftSets.length} sets added</p>
                 <table>
                     <thead>
                         <tr>
@@ -175,6 +177,14 @@ export default function CreateWorkoutPage() {
                 </table>
                 <button onClick={handleAddRow}>+ Add Set</button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
+                <div>
+                    <textarea
+                        placeholder='Notes...'
+                        value={notes}
+                        style={{ width: '500px', border: '2px solid #d4d4d4', borderRadius: '8px', padding: '5px'}}
+                        onChange={(e) => setNotes(e.target.value)}
+                    />
+                </div>
                 <div>
                     <button onClick={handleSaveWorkout}>Save Workout</button>
                 </div>
