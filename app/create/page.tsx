@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
+import { toLocalDateString, formatDateForDisplay } from '@/lib/date'
 import AppShell from '@/components/AppShell'
 
 type Exercise = {
@@ -18,7 +19,7 @@ type DraftSet = {
 }
 
 export default function CreateWorkoutPage() {
-    const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+    const [date, setDate] = useState(toLocalDateString(new Date()))
     const [name, setName] = useState('New Workout')
     const [notes, setNotes] = useState('')
     const [draftSets, setDraftSets] = useState<DraftSet[]>([])

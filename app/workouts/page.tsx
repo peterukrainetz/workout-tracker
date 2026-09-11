@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { toLocalDateString } from '@/lib/date'
+import { formatDateForDisplay } from '@/lib/date'
 import Link from 'next/link'
 import AppShell from '@/components/AppShell'
 
@@ -40,7 +40,7 @@ export default function Workouts() {
         {workouts.map((w) => (
             <div key={w.id} style={{ border: '2px solid #333', borderRadius: '20px', marginBottom: '1rem', maxWidth: '400px' }}>
               <Link href={`/workouts/${w.id}`} style={{ display: 'block', padding: '1rem' }}>
-                <p>{w.date.split('T')[0]}</p>
+                <p>{formatDateForDisplay(w.date)}</p>
                 <h3>{w.name ?? 'Untitled'}</h3>
                 {w.logged_sets.map((s) => (
                   <p key={s.id}>
