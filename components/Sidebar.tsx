@@ -46,7 +46,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
 
             {!isCollapsed && (
                 <ul style={{ listStyle: 'none', padding: 0 }}>
-                    <li><Link href="/create">+ Create Workout</Link></li>
+                    <li><Link href="/create-workout">+ Create Workout</Link></li>
                     <li><Link href="/">Dashboard</Link></li>
                     <li><Link href="/workouts">Workouts</Link></li>
                     <li><Link href="/exercises">Exercises</Link></li>

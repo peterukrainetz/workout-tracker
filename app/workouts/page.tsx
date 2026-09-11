@@ -33,24 +33,22 @@ export default function Workouts() {
   }, [])
 
   return (
-    <AppShell>
-      <div style={{ padding: '2rem' }}>
-        <h1 style={{ marginBottom: '1rem' }}>Workouts</h1>
-        {workouts.length === 0 && <p>No logged workouts. Add a workout using the sidebar.</p>}
-        {workouts.map((w) => (
-            <div key={w.id} style={{ border: '2px solid #333', borderRadius: '20px', marginBottom: '1rem', maxWidth: '400px' }}>
-              <Link href={`/workouts/${w.id}`} style={{ display: 'block', padding: '1rem' }}>
-                <p>{formatDateForDisplay(w.date)}</p>
-                <h3>{w.name ?? 'Untitled'}</h3>
-                {w.logged_sets.map((s) => (
-                  <p key={s.id}>
-                    {s.exercises?.name ?? 'Unknown exercise'} - {s.weight}lbs - {s.reps} reps
-                  </p>
-                ))}
-              </Link>
-            </div>
-        ))}
-      </div>
-    </AppShell>
+    <div style={{ padding: '2rem' }}>
+      <h1 style={{ marginBottom: '1rem' }}>Workouts</h1>
+      {workouts.length === 0 && <p>No logged workouts. Add a workout using the sidebar.</p>}
+      {workouts.map((w) => (
+          <div key={w.id} style={{ border: '2px solid #333', borderRadius: '20px', marginBottom: '1rem', maxWidth: '400px' }}>
+            <Link href={`/workouts/${w.id}`} style={{ display: 'block', padding: '1rem' }}>
+              <p>{formatDateForDisplay(w.date)}</p>
+              <h3>{w.name ?? 'Untitled'}</h3>
+              {w.logged_sets.map((s) => (
+                <p key={s.id}>
+                  {s.exercises?.name ?? 'Unknown exercise'} - {s.weight}lbs - {s.reps} reps
+                </p>
+              ))}
+            </Link>
+          </div>
+      ))}
+    </div>
   )
 }

@@ -158,7 +158,7 @@ export default function EditWorkoutPage() {
     }
 
     return (
-        <AppShell>
+        <>
             {isLoading ? <h1 style={{ padding: '2rem' }}>Loading...</h1> : (
                 <div style={{ padding: '2rem', maxWidth: '400px' }}>
                     <h1>Edit Workout</h1>
@@ -259,6 +259,6 @@ export default function EditWorkoutPage() {
                     </div>
                 </div>
             )}
-        </AppShell>
+        </>
     )
 }
