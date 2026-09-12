@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter, useParams, notFound } from 'next/navigation'
 import { toLocalDateString } from '@/lib/date'
-import AppShell from '@/components/AppShell'
+import Modal from '@/components/Modal'
 
 type Exercise = {
     id: number
@@ -27,6 +27,7 @@ export default function EditWorkoutPage() {
     const [error, setError] = useState('')
     const [notFoundState, setNotFoundState] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
     const router = useRouter()
     const { id } = useParams()
 
@@ -249,16 +250,21 @@ export default function EditWorkoutPage() {
                         <button onClick={handleUpdateWorkout}>Save</button>
                         <button 
                             style={{ color: 'red', flex: '1' }}
-                            onClick={() => {
-                                if (confirm('Delete this workout? This cannot be undone.')) {
-                                    handleDeleteWorkout()
-                            }}}
-                            >
+                            onClick={() => setShowDeleteConfirm(true)}
+                        >
                             Delete Workout
                         </button>
                     </div>
                 </div>
             )}
+            <Modal isOpen={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)}>
+                <h1>Confirm Delete</h1>
+                <p>Are you sure you want to delete this workout? This cannot be undone.</p>
+                <div style={{ display: 'flex', justifyContent: 'space-evenly'}}>
+                    <button onClick={handleDeleteWorkout}>Delete</button>
+                    <button onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
+                </div>
+            </Modal>
         </>
     )
 }
