@@ -1,18 +1,22 @@
 # Workout Tracker
 
-A fullstack workout tracking web app built to help lifters log workouts, plan future sessions, and track progress over time. Includes built-in tools like a one-rep max (1RM) calculator. Designed to be flexible enough to fit anyone's needs.
+A fullstack web app that allows users of all skill level to plan and log their workouts in any way they like. Also includes built-in tools such as a one-rep max calculator, timer, etc. Designed to be flexible enough to fit any and every lifter's needs.
 
 **Live demo:** [workout-tracker-eta-snowy.vercel.app](https://workout-tracker-eta-snowy.vercel.app/)
 
 ## Features
 
-- ✅ User authentication (sign up, log in, log out)
-- ✅ Secure, per-user data access (Row Level Security)
-- 🔲 Workout logging (sets, reps, weight)
-- 🔲 Workout history view
-- 🔲 1RM (one-rep max) calculator
-- 🔲 Workout planning / templates
+- ✅ User authentication
+- ✅ Future workout planning
+- ✅ Recent workout logging
+- ✅ Workout history page
 - 🔲 Custom exercise creation
+- Tools:
+  - 🔲 1RM calculator
+  - 🔲 Weight to plate calculator
+  - 🔲 Timer
+
+**Keep in mind features are contantly being updated!**
 
 ## Tech Stack
 
@@ -61,4 +65,4 @@ This project is under active development as a learning project and portfolio pie
 
 ## About
 
-Built by [Peter Ukrainetz](https://github.com/peterukrainetz) as a way to learn fullstack web development (Next.js, React, Supabase) while building something useful for any type of lifter, regardless of skill level.
+Built by [Peter Ukrainetz](https://github.com/peterukrainetz) as a way to learn fullstack web development (Next.js, React, Supabase) while building something useful and personally fulfilling.
