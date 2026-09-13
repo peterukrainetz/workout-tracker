@@ -10,13 +10,13 @@ A fullstack web app that allows users of all skill level to plan and log their w
 - ✅ Future workout planning
 - ✅ Recent workout logging
 - ✅ Workout history page
-- 🔲 Custom exercise creation
+- ✅ Custom exercise creation
 - Tools:
   - 🔲 1RM calculator
   - 🔲 Weight to plate calculator
   - 🔲 Timer
 
-**Keep in mind features are contantly being updated!**
+**Keep in mind features are constantly being updated!**
 
 ## Tech Stack
 
