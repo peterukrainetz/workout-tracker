@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useState } from 'react'
 import Sidebar from './Sidebar'
 
 export default function AppShell({ children }: {children: React.ReactNode }) {

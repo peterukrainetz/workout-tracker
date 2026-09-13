@@ -4,12 +4,10 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 import { toLocalDateString } from '@/lib/date'
-import AppShell from '@/components/AppShell'
-
-type Exercise = {
-    id: number
-    name: string
-}
+import ExerciseMenu from '@/components/ExerciseMenu'
+import { Exercise } from '@/lib/types'
+import { useAuth } from '@/context/AuthContext'
+import CreateExerciseModal from '@/components/CreateExercise'
 
 type DraftSet = {
     id: string
@@ -25,12 +23,21 @@ export default function CreateWorkoutPage() {
     const [draftSets, setDraftSets] = useState<DraftSet[]>([])
     const [exercises, setExercises] = useState<Exercise[]>([])
     const [error, setError] = useState('')
+    const [showExerciseMenu, setShowExerciseMenu] = useState(false)
+    const [showCreateExercise, setShowCreateExercise] = useState(false)
+    const [activeRowId, setActiveRowId] = useState<string | null>(null)
+    const { user } = useAuth()
     const router = useRouter()
 
+    // Load exercise list
     useEffect(() => {
-        supabase.from('exercises').select('id, name').then(({ data }) => {
-            if (data) setExercises(data)
-        })
+        supabase
+            .from('exercises')
+            .select('id, name')
+            .order('name', {ascending: true})
+            .then(({ data }) => {
+                if (data) setExercises(data)
+            })
     }, [])
 
     const handleAddRow = () => {
@@ -45,9 +52,6 @@ export default function CreateWorkoutPage() {
     }
 
     const handleSaveWorkout = async () => {
-        // Store user id
-        const { data: { user } } = await supabase.auth.getUser()
-
         // If user is not signed in, display error and exit
         if (!user)
         {
@@ -97,97 +101,125 @@ export default function CreateWorkoutPage() {
     }
 
     return (
-        <div style={{ padding: '2rem', maxWidth: '400px' }}>
-            <div>
-                <input
-                    type='text'
-                    defaultValue='New Workout'
-                    style={{ border: '2px dashed #d4d4d4', borderRadius: '8px', padding: '5px'}}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-            </div>
-            <div>
-                <label>Date: </label>
-                <input type='date' value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Exercise</th>
-                        <th>Weight</th>
-                        <th>Reps</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {draftSets.map((row) => (
-                        <tr key={row.id}>
-                            <td>
-                                <select
-                                    value={row.exercise_id ?? ''}
-                                    onChange={(e) =>
-                                        setDraftSets(
-                                            draftSets.map((r) => 
-                                                r.id === row.id ? { ...r, exercise_id: Number(e.target.value) } : r
-                                            )
-                                        )
-                                    }
-                                >
-                                    <option value="">Choose exercise</option>
-                                    {exercises.map((ex) => (
-                                        <option key={ex.id} value={ex.id}>{ex.name}</option>
-                                    ))}
-                                </select>
-                            </td>
-                            <td>
-                                <input
-                                    type="number"
-                                    value={row.weight ?? ''}
-                                    onChange={(e) => 
-                                        setDraftSets(
-                                            draftSets.map((r) => 
-                                                r.id === row.id ? { ...r, weight: Number(e.target.value) } : r
-                                            )
-                                        )
-                                    }
-                                />
-                            </td>
-                            <td>
-                                <input
-                                    type="number"
-                                    value={row.reps ?? ''}
-                                    onChange={(e) => 
-                                        setDraftSets(
-                                            draftSets.map((r) => 
-                                                r.id === row.id ? { ...r, reps: Number(e.target.value) } : r
-                                            )
-                                        )
-                                    }
-                                />
-                            </td>
-                            <td>
-                                <button onClick={() => setDraftSets(draftSets.filter((r) => r.id !== row.id))}>
-                                    Remove
-                                </button>
-                            </td>
+        <>
+            <div style={{ padding: '2rem', maxWidth: '400px' }}>
+                <div>
+                    <input
+                        type='text'
+                        defaultValue='New Workout'
+                        style={{ border: '2px dashed #d4d4d4', borderRadius: '8px', padding: '5px'}}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>Date: </label>
+                    <input type='date' value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Exercise</th>
+                            <th>Weight</th>
+                            <th>Reps</th>
+                            <th></th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <button onClick={handleAddRow}>+ Add Set</button>
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            <div>
-                <textarea
-                    placeholder='Notes...'
-                    value={notes}
-                    style={{ width: '500px', border: '2px solid #d4d4d4', borderRadius: '8px', padding: '5px'}}
-                    onChange={(e) => setNotes(e.target.value)}
-                />
+                    </thead>
+                    <tbody>
+                        {draftSets.map((row) => (
+                            <tr key={row.id}>
+                                <td>
+                                    <button onClick={() => {
+                                        setShowExerciseMenu(true)
+                                        setActiveRowId(row.id)
+                                    }}>
+                                        {row.exercise_id ? exercises.find((item) => item.id === row.exercise_id)?.name
+                                                            : 'Choose Exercise'}
+                                    </button>
+                                </td>
+                                <td>
+                                    <input
+                                        type="number"
+                                        value={row.weight ?? ''}
+                                        onChange={(e) => 
+                                            setDraftSets(
+                                                draftSets.map((r) => 
+                                                    r.id === row.id ? { ...r, weight: Number(e.target.value) } : r
+                                                )
+                                            )
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        type="number"
+                                        value={row.reps ?? ''}
+                                        onChange={(e) => 
+                                            setDraftSets(
+                                                draftSets.map((r) => 
+                                                    r.id === row.id ? { ...r, reps: Number(e.target.value) } : r
+                                                )
+                                            )
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <button onClick={() => setDraftSets(draftSets.filter((r) => r.id !== row.id))}>
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                <button onClick={handleAddRow}>+ Add Set</button>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                <div>
+                    <textarea
+                        placeholder='Notes...'
+                        value={notes}
+                        style={{ width: '500px', border: '2px solid #d4d4d4', borderRadius: '8px', padding: '5px'}}
+                        onChange={(e) => setNotes(e.target.value)}
+                    />
+                </div>
+                <div>
+                    <button onClick={handleSaveWorkout}>Save Workout</button>
+                </div>
             </div>
-            <div>
-                <button onClick={handleSaveWorkout}>Save Workout</button>
-            </div>
-        </div>
+            <ExerciseMenu
+                isOpen={showExerciseMenu}
+                onClose={() => setShowExerciseMenu(false)}
+                exercises={exercises}
+                onSelect={(exerciseId) => {
+                    setDraftSets(
+                        draftSets.map((r) =>
+                            r.id === activeRowId ? {...r, exercise_id: exerciseId} : r
+                        )
+                    )
+
+                    setShowExerciseMenu(false)
+                }}
+                onAddNew={() => {
+                    setShowExerciseMenu(false)
+                    setShowCreateExercise(true)
+                }}
+            />
+            <CreateExerciseModal
+                isOpen={showCreateExercise}
+                onClose={() => {
+                    setShowCreateExercise(false)
+                }}
+                onCreated={(newExercise) => {
+                    setDraftSets(
+                        draftSets.map((r) =>
+                            r.id === activeRowId ? {...r, exercise_id: newExercise.id} : r
+                        )
+                    )
+
+                    setExercises([...exercises, newExercise])
+                }}
+            />
+        </>
+        
     )
 }

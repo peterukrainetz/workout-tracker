@@ -5,11 +5,9 @@ import { supabase } from '@/lib/supabase'
 import { useRouter, useParams, notFound } from 'next/navigation'
 import { toLocalDateString } from '@/lib/date'
 import Modal from '@/components/Modal'
-
-type Exercise = {
-    id: number
-    name: string
-}
+import ExerciseMenu from '@/components/ExerciseMenu'
+import { Exercise } from '@/lib/types'
+import CreateExerciseModal from '@/components/CreateExercise'
 
 type DraftSet = {
     id: string
@@ -25,6 +23,9 @@ export default function EditWorkoutPage() {
     const [draftSets, setDraftSets] = useState<DraftSet[]>([])
     const [exercises, setExercises] = useState<Exercise[]>([])
     const [error, setError] = useState('')
+    const [showExerciseMenu, setShowExerciseMenu] = useState(false)
+    const [showCreateExercise, setShowCreateExercise] = useState(false)
+    const [activeRowId, setActiveRowId] = useState<string | null>(null)
     const [notFoundState, setNotFoundState] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -33,9 +34,13 @@ export default function EditWorkoutPage() {
 
     // Load exercise list
     useEffect(() => {
-        supabase.from('exercises').select('id, name').then(({ data }) => {
-            if (data) setExercises(data)
-        })
+        supabase
+            .from('exercises')
+            .select('id, name')
+            .order('name', {ascending: true})
+            .then(({ data }) => {
+                if (data) setExercises(data)
+            })
     }, [])
 
     // Load workout info on the form
@@ -171,7 +176,6 @@ export default function EditWorkoutPage() {
                         <label>Date: </label>
                         <input type='date' value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
                     </div>
-                    <p>{draftSets.length} sets added</p>
                     <table>
                         <thead>
                             <tr>
@@ -185,21 +189,13 @@ export default function EditWorkoutPage() {
                             {draftSets.map((row) => (
                                 <tr key={row.id}>
                                     <td>
-                                        <select
-                                            value={row.exercise_id ?? ''}
-                                            onChange={(e) =>
-                                                setDraftSets(
-                                                    draftSets.map((r) => 
-                                                        r.id === row.id ? { ...r, exercise_id: Number(e.target.value) } : r
-                                                    )
-                                                )
-                                            }
-                                        >
-                                            <option value=''>Exercise</option>
-                                            {exercises.map((ex) => (
-                                                <option key={ex.id} value={ex.id}>{ex.name}</option>
-                                            ))}
-                                        </select>
+                                        <button onClick={() => {
+                                            setShowExerciseMenu(true)
+                                            setActiveRowId(row.id)
+                                        }}>
+                                            {row.exercise_id ? exercises.find((item) => item.id === row.exercise_id)?.name
+                                                                : 'Choose Exercise'}
+                                        </button>
                                     </td>
                                     <td>
                                         <input
@@ -265,6 +261,39 @@ export default function EditWorkoutPage() {
                     <button onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
                 </div>
             </Modal>
+            <ExerciseMenu
+                isOpen={showExerciseMenu}
+                onClose={() => setShowExerciseMenu(false)}
+                exercises={exercises}
+                onSelect={(exerciseId) => {
+                    setDraftSets(
+                        draftSets.map((r) =>
+                            r.id === activeRowId ? {...r, exercise_id: exerciseId} : r
+                        )
+                    )
+
+                    setShowExerciseMenu(false)
+                }}
+                onAddNew={() => {
+                    setShowExerciseMenu(false)
+                    setShowCreateExercise(true)
+                }}
+            />
+            <CreateExerciseModal
+                isOpen={showCreateExercise}
+                onClose={() => {
+                    setShowCreateExercise(false)
+                }}
+                onCreated={(newExercise) => {
+                    setDraftSets(
+                        draftSets.map((r) =>
+                            r.id === activeRowId ? {...r, exercise_id: newExercise.id} : r
+                        )
+                    )
+                    
+                    setExercises([...exercises, newExercise])
+                }}
+            />
         </>
     )
 }
