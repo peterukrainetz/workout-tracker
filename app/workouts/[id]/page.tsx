@@ -36,7 +36,7 @@ export default function EditWorkoutPage() {
     useEffect(() => {
         supabase
             .from('exercises')
-            .select('id, name')
+            .select('id, name, description')
             .order('name', {ascending: true})
             .then(({ data }) => {
                 if (data) setExercises(data)
@@ -253,6 +253,7 @@ export default function EditWorkoutPage() {
                     </div>
                 </div>
             )}
+
             <Modal isOpen={showDeleteConfirm} onClose={() => setShowDeleteConfirm(false)}>
                 <h1>Confirm Delete</h1>
                 <p>Are you sure you want to delete this workout? This cannot be undone.</p>
@@ -261,6 +262,7 @@ export default function EditWorkoutPage() {
                     <button onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
                 </div>
             </Modal>
+
             <ExerciseMenu
                 isOpen={showExerciseMenu}
                 onClose={() => setShowExerciseMenu(false)}

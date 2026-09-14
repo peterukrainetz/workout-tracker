@@ -33,7 +33,7 @@ export default function CreateWorkoutPage() {
     useEffect(() => {
         supabase
             .from('exercises')
-            .select('id, name')
+            .select('id, name, description')
             .order('name', {ascending: true})
             .then(({ data }) => {
                 if (data) setExercises(data)
@@ -186,6 +186,7 @@ export default function CreateWorkoutPage() {
                     <button onClick={handleSaveWorkout}>Save Workout</button>
                 </div>
             </div>
+
             <ExerciseMenu
                 isOpen={showExerciseMenu}
                 onClose={() => setShowExerciseMenu(false)}
@@ -204,6 +205,7 @@ export default function CreateWorkoutPage() {
                     setShowCreateExercise(true)
                 }}
             />
+            
             <CreateExerciseModal
                 isOpen={showCreateExercise}
                 onClose={() => {

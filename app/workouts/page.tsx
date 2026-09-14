@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { formatDateForDisplay } from '@/lib/date'
 import Link from 'next/link'
-import AppShell from '@/components/AppShell'
 
 type Workout = {
   id: number

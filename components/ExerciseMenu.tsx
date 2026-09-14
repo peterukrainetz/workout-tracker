@@ -29,4 +29,4 @@ export default function ExerciseMenuModal({ isOpen, onClose, exercises, onSelect
                 </div>
             </Modal>
         )
-}
+    }
