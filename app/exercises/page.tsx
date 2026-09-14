@@ -43,7 +43,12 @@ export default function Exercises() {
 
     return (
         <>
-            <div style={{ padding: '2rem' }}>
+            <div style={{ padding: '2rem' }}
+                onClick={() => {
+                    setError('')
+                    setSelectedExerciseId(null)
+                }}
+            >
                 <div style={{
                         display: 'flex',
                         width: '20vw',
@@ -51,24 +56,24 @@ export default function Exercises() {
                         justifyContent: 'space-evenly'
                 }}>
                     <h1>Exercises</h1>
-                    <button onClick={() => setShowCreateExercise(true)}>+ Add New</button>
+                    <button onClick={(e) => {
+                        e.stopPropagation()
+                        setShowCreateExercise(true)
+                    }}>
+                        + Add New
+                    </button>
                 </div>
                     <div style={{
                         display: 'flex'
                     }}>
-                        <div
-                            onClick={() => {
-                                setError('')
-                                setSelectedExerciseId(null)
-                            }}
-                                style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                height: '80vh',
-                                overflowY: 'auto',
-                                width: '20vw',
-                                alignItems: 'center',
-                                borderRight: '1px solid #333'
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            height: '80vh',
+                            overflowY: 'auto',
+                            width: '20vw',
+                            alignItems: 'center',
+                            borderRight: '1px solid #333'
                         }}>
                             {exercises.map((ex) => (
                                 <button
@@ -90,53 +95,66 @@ export default function Exercises() {
                             ))}
                         </div>
 
-                        {selectedExerciseId &&
-                            <div style={{ flex: '1' }}>
-                                <div style={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    height: '80vh'
-                                }}>
-                                    <h1 style={{ paddingBottom: '2rem' }}>{exercises.find((item) => item.id === selectedExerciseId)?.name}</h1>
-                                    <p>Description:</p>
-                                    <p>{exercises.find((item) => item.id === selectedExerciseId)?.description}</p>
-                                </div>
+                        <div style={{ flex: '1' }}>
+                            {selectedExerciseId ? (
+                                <>
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        height: '80vh'
+                                    }}>
+                                        <h1 style={{ paddingBottom: '2rem' }}>{exercises.find((item) => item.id === selectedExerciseId)?.name}</h1>
+                                        <p>Description:</p>
+                                        <p>{exercises.find((item) => item.id === selectedExerciseId)?.description}</p>
+                                    </div>
 
-                                <p style={{
-                                    justifySelf: 'center',
-                                    color: 'red'
-                                }}>
-                                    {error}
-                                </p>
+                                    <p style={{
+                                        justifySelf: 'center',
+                                        color: 'red'
+                                    }}>
+                                        {error}
+                                    </p>
 
-                                <div style={{
-                                    display: 'flex',
-                                    justifyContent: 'space-evenly',
-                                }}>
-                                    <button>Edit</button>
-                                    <button 
-                                        style={{ color: 'red' }}
-                                        onClick={async () => {
-                                            const { count } = await supabase
-                                                .from('logged_sets')
-                                                .select('*', { count: 'exact', head: true })
-                                                .eq('exercise_id', selectedExerciseId)
+                                    <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-evenly',
+                                    }}>
+                                        <button onClick={(e) => {
+                                            e.stopPropagation()
+                                        }}>
+                                            Edit
+                                        </button>
 
-                                            if (count && count > 0)
-                                            {
-                                                setError('Cannot delete exercise because it exists in a saved workout.')
-                                                return
-                                            }
+                                        <button 
+                                            style={{ color: 'red' }}
+                                            onClick={async (e) => {
+                                                e.stopPropagation()
 
-                                            setShowDeleteConfirm(true)
-                                        }}
-                                    >
-                                        Delete Exercise
-                                    </button>
-                                </div>
-                            </div>
-                        }
+                                                const { count } = await supabase
+                                                    .from('logged_sets')
+                                                    .select('*', { count: 'exact', head: true })
+                                                    .eq('exercise_id', selectedExerciseId)
+
+                                                if (count && count > 0)
+                                                {
+                                                    setError('Cannot delete exercise because it exists in a saved workout.')
+                                                    return
+                                                }
+
+                                                setShowDeleteConfirm(true)
+                                            }}
+                                        >
+                                            Delete Exercise
+                                        </button>
+                                    </div>
+                                </>
+                            ) : (
+                                <h1 style={{ justifySelf: 'center' }}>
+                                    Select an exercise to view
+                                </h1>
+                            )}
+                        </div>
                     </div>
             </div>
 
