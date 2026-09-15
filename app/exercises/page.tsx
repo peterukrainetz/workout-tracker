@@ -4,20 +4,25 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { Exercise } from '@/lib/types'
 import Modal from '@/components/Modal'
-import CreateExerciseModal from '@/components/CreateExercise'
+import ExerciseHandler from '@/components/ExerciseHandler'
+import { useAuth } from '@/context/AuthContext'
+import { existsSync } from 'fs'
 
 export default function Exercises() {
     const [exercises, setExercises] = useState<Exercise[]>([])
     const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null)
-    const [showCreateExercise, setShowCreateExercise] = useState(false)
+    const [showExerciseHandler, setShowExerciseHandler] = useState(false)
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
     const [error, setError] = useState('')
+    const { user } = useAuth();
+    const selectedExercise = exercises.find((item) => item.id === selectedExerciseId)
+    const isOwner = selectedExercise?.user_id === user?.id
 
     // Load exercise list
     useEffect(() => {
         supabase
             .from('exercises')
-            .select('id, name, description')
+            .select('*')
             .order('name', {ascending: true})
             .then(({ data }) => {
                 if (data) setExercises(data)
@@ -58,7 +63,8 @@ export default function Exercises() {
                     <h1>Exercises</h1>
                     <button onClick={(e) => {
                         e.stopPropagation()
-                        setShowCreateExercise(true)
+                        setSelectedExerciseId(null)
+                        setShowExerciseHandler(true)
                     }}>
                         + Add New
                     </button>
@@ -120,33 +126,38 @@ export default function Exercises() {
                                         display: 'flex',
                                         justifyContent: 'space-evenly',
                                     }}>
-                                        <button onClick={(e) => {
-                                            e.stopPropagation()
-                                        }}>
-                                            Edit
-                                        </button>
+                                        {isOwner &&
+                                            <>
+                                                <button onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    setShowExerciseHandler(true)
+                                                }}>
+                                                    Edit
+                                                </button>
+                                            
+                                                <button 
+                                                    style={{ color: 'red' }}
+                                                    onClick={async (e) => {
+                                                        e.stopPropagation()
 
-                                        <button 
-                                            style={{ color: 'red' }}
-                                            onClick={async (e) => {
-                                                e.stopPropagation()
+                                                        const { count } = await supabase
+                                                            .from('logged_sets')
+                                                            .select('*', { count: 'exact', head: true })
+                                                            .eq('exercise_id', selectedExerciseId)
 
-                                                const { count } = await supabase
-                                                    .from('logged_sets')
-                                                    .select('*', { count: 'exact', head: true })
-                                                    .eq('exercise_id', selectedExerciseId)
+                                                        if (count && count > 0)
+                                                        {
+                                                            setError('Cannot delete exercise because it exists in a saved workout.')
+                                                            return
+                                                        }
 
-                                                if (count && count > 0)
-                                                {
-                                                    setError('Cannot delete exercise because it exists in a saved workout.')
-                                                    return
-                                                }
-
-                                                setShowDeleteConfirm(true)
-                                            }}
-                                        >
-                                            Delete Exercise
-                                        </button>
+                                                        setShowDeleteConfirm(true)
+                                                    }}
+                                                >
+                                                    Delete Exercise
+                                                </button>
+                                            </>
+                                        }
                                     </div>
                                 </>
                             ) : (
@@ -167,12 +178,25 @@ export default function Exercises() {
                 </div>
             </Modal>
 
-            <CreateExerciseModal
-                isOpen={showCreateExercise}
+            <ExerciseHandler
+                isOpen={showExerciseHandler}
+                existingExercise={selectedExercise ?? null}
                 onClose={() => {
-                    setShowCreateExercise(false)
+                    setShowExerciseHandler(false)
                 }}
-                onCreated={(newExercise) => setExercises([...exercises, newExercise])}
+                onCreated={(newExercise) => {
+                    if (selectedExercise) {
+                        setExercises(
+                            exercises.map((ex) => 
+                                ex.id === newExercise.id ? newExercise : ex
+                            )
+                        )
+                    }
+                    else {
+                        setExercises([...exercises, newExercise])
+                    }
+                        
+                }}
             />
         </>
     )

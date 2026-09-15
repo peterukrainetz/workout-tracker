@@ -9,7 +9,7 @@ export default function AppShell({ children }: {children: React.ReactNode }) {
     return (
         <div>
             <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
-            <div style={{ marginLeft: isCollapsed ? '60px' : '10vw', transition: 'margin-left 0.2s' }}>
+            <div style={{ marginLeft: isCollapsed ? '0vw' : '10vw', transition: 'margin-left 0.2s' }}>
                 {children}
             </div>
         </div>

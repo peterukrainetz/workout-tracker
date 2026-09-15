@@ -7,7 +7,7 @@ import { toLocalDateString } from '@/lib/date'
 import ExerciseMenu from '@/components/ExerciseMenu'
 import { Exercise } from '@/lib/types'
 import { useAuth } from '@/context/AuthContext'
-import CreateExerciseModal from '@/components/CreateExercise'
+import ExerciseHandler from '@/components/ExerciseHandler'
 
 type DraftSet = {
     id: string
@@ -33,7 +33,7 @@ export default function CreateWorkoutPage() {
     useEffect(() => {
         supabase
             .from('exercises')
-            .select('id, name, description')
+            .select('*')
             .order('name', {ascending: true})
             .then(({ data }) => {
                 if (data) setExercises(data)
@@ -206,8 +206,9 @@ export default function CreateWorkoutPage() {
                 }}
             />
             
-            <CreateExerciseModal
+            <ExerciseHandler
                 isOpen={showCreateExercise}
+                existingExercise={null}
                 onClose={() => {
                     setShowCreateExercise(false)
                 }}
