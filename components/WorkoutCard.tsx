@@ -35,13 +35,13 @@ export default function WorkoutCard({ workout, isSelected, onToggleSelect, onCom
     }
 
     return (
-        <div style={{
+        <div className='transition-transform duration-300 ease-in-out hover:scale-105' style={{
             border: '2px solid',
             borderRadius: '20px',
             borderColor: workout.completed ? 'rgb(0, 102, 36)' : '#333',
             backgroundColor: workout.completed ? 'rgb(0, 138, 92)' : undefined,
             marginBottom: '1rem',
-            maxWidth: '400px'
+            maxWidth: '400px',
         }}>
             <div onClick={() => {
                 router.push(`/workouts/${workout.id}`)
@@ -60,7 +60,8 @@ export default function WorkoutCard({ workout, isSelected, onToggleSelect, onCom
                     }} 
                     style={{
                         alignSelf: 'flex-start',
-                        paddingRight: '1rem'
+                        paddingRight: '1rem',
+                        cursor: 'pointer'
                     }}>
                         O
                     </button>
@@ -87,7 +88,7 @@ export default function WorkoutCard({ workout, isSelected, onToggleSelect, onCom
                             e.stopPropagation()
                             handleMarkCompleted()
                         }}
-                        style={{ alignSelf: 'flex-end', marginTop: 'auto' }}
+                        style={{ alignSelf: 'flex-end', marginTop: 'auto', cursor: 'pointer' }}
                         >
                             {workout.completed ? 'Mark Incomplete' : 'Complete'}
                         </button>
