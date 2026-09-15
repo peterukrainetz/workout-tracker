@@ -6,7 +6,6 @@ import { Exercise } from '@/lib/types'
 import Modal from '@/components/Modal'
 import ExerciseHandler from '@/components/ExerciseHandler'
 import { useAuth } from '@/context/AuthContext'
-import { existsSync } from 'fs'
 
 export default function Exercises() {
     const [exercises, setExercises] = useState<Exercise[]>([])
@@ -110,9 +109,14 @@ export default function Exercises() {
                                         alignItems: 'center',
                                         height: '80vh'
                                     }}>
-                                        <h1 style={{ paddingBottom: '2rem' }}>{exercises.find((item) => item.id === selectedExerciseId)?.name}</h1>
+                                        <h1 style={{ paddingBottom: '2rem' }}>
+                                            {exercises.find((item) => item.id === selectedExerciseId)?.name}
+                                        </h1>
+
                                         <p>Description:</p>
-                                        <p>{exercises.find((item) => item.id === selectedExerciseId)?.description}</p>
+                                        <p>
+                                            {exercises.find((item) => item.id === selectedExerciseId)?.description}
+                                        </p>
                                     </div>
 
                                     <p style={{

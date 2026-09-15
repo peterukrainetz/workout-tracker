@@ -4,3 +4,16 @@ export type Exercise = {
       description: string
       user_id: string
 }
+
+export type Workout = {
+  id: number
+  date: string
+  name: string | null
+  logged_sets: {
+    id: number
+    weight: number
+    reps: number
+    exercises: { name: string } | null
+  }[]
+  completed: boolean
+}

@@ -2,33 +2,23 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { formatDateForDisplay, toLocalDateString } from '@/lib/date'
+import { toLocalDateString } from '@/lib/date'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
-import AppShell from '@/components/AppShell'
-
-type Workout = {
-  id: number
-  date: string
-  name: string | null
-  logged_sets: {
-    id: number
-    weight: number
-    reps: number
-    exercises: { name: string } | null
-  }[]
-}
+import { Workout } from '@/lib/types'
+import WorkoutCard from '@/components/WorkoutCard'
 
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [upcomingWorkouts, setUpcomingWorkouts] = useState<Workout[]>([])
+  const [selectedWorkouts, setSelectedWorkouts] = useState<Set<number>>(new Set())
   const { user } = useAuth()
 
   useEffect(() => {
     supabase
       .from('logged_workouts')
-      .select('id, date, name, logged_sets(id, weight, reps, exercises(name))')
-      .lt('date', toLocalDateString(new Date()))
+      .select('id, date, name, completed, logged_sets(id, weight, reps, exercises(name))')
+      .or(`date.lt.${toLocalDateString(new Date())},completed.eq.true`)
       .order('date', { ascending: false})
       .limit(3)
       .then(({ data }) => {
@@ -37,14 +27,43 @@ export default function Dashboard() {
 
     supabase
       .from('logged_workouts')
-      .select('id, date, name, logged_sets(id, weight, reps, exercises(name))')
+      .select('id, date, name, completed, logged_sets(id, weight, reps, exercises(name))')
       .gte('date', toLocalDateString(new Date()))
+      .eq('completed', false)
       .order('date', { ascending: true})
       .limit(3)
       .then(({ data }) => {
         if (data) setUpcomingWorkouts(data as unknown as Workout[])
       })
   }, [])
+
+  function handleWorkoutCompletionChange(id: number, completed: boolean) {
+    const foundInRecent = workouts.find((w) => w.id === id)
+    const foundInUpcoming = upcomingWorkouts.find((w) => w.id === id)
+
+    const updatedWorkout = { ...(foundInRecent ?? foundInUpcoming)!, completed }
+
+    const belongsInRecent = updatedWorkout.date < toLocalDateString(new Date()) || completed === true
+
+    let newRecent: Workout[]
+    let newUpcoming: Workout[]
+
+    if (belongsInRecent) {
+      newRecent = [...workouts.filter((w) => w.id !== id), updatedWorkout]
+      newUpcoming = upcomingWorkouts.filter((w) => w.id !== id)
+    } else {
+      newUpcoming = [...upcomingWorkouts.filter((w) => w.id !== id), updatedWorkout]
+      newRecent = workouts.filter((w) => w.id !== id)
+    }
+
+    const sortedRecent = [...newRecent].sort((a, b) => b.date.localeCompare(a.date))
+    const sortedUpcoming = [...newUpcoming].sort((a, b) => a.date.localeCompare(b.date))
+
+    setWorkouts(sortedRecent)
+    setUpcomingWorkouts(sortedUpcoming)
+
+      
+  }
 
   return (
     <div style={{ padding: '2rem' }}>
@@ -55,51 +74,39 @@ export default function Dashboard() {
           border: '2px solid #ffffff',
           borderRadius: '20px',
           marginBottom: '1rem',
-          maxWidth: '600px'
+          width: 'fit-content'
         }}>
           {workouts.length === 0 && <p>No recent workouts. Add a workout using the sidebar.</p>}
           {workouts.map((w) => (
-              <div key={w.id} style={{ border: '2px solid #333',
-                borderRadius: '20px',
-                marginBottom: '1rem',
-                maxWidth: '400px'
-              }}>
-                <Link href={`/workouts/${w.id}`} style={{ display: 'block', padding: '1rem' }}>
-                  <p>{formatDateForDisplay(w.date)}</p>
-                  <h3>{w.name ?? 'Untitled Workout'}</h3>
-                  {w.logged_sets.map((s) => (
-                    <p key={s.id}>
-                      {s.exercises?.name ?? 'Unknown exercise'} - {s.weight}lbs - {s.reps} reps
-                    </p>
-                  ))}
-                </Link>
-              </div>
+              <WorkoutCard
+                key={w.id}
+                workout={w}
+                isSelected={false}
+                onToggleSelect={() => {return}}
+                onCompleted={(id, completed) => handleWorkoutCompletionChange(id, completed)}
+              />
           ))}
           {workouts.length !== 0 && <p><Link href="/workouts">See all</Link></p>}
         </div>
 
       <h2 style={{ paddingLeft: '2rem' }}>Upcoming Workouts</h2>
         <div style={{ padding: '1rem',
-            border: '2px solid #ffffff',
-            borderRadius: '20px',
-            marginBottom: '1rem',
-            maxWidth: '600px'
-          }}>
-            {upcomingWorkouts.length === 0 && <p>No upcoming workouts. Add a workout using the sidebar.</p>}
+          border: '2px solid #ffffff',
+          borderRadius: '20px',
+          marginBottom: '1rem',
+          width: 'fit-content'
+        }}>
+          {upcomingWorkouts.length === 0 && <p>No upcoming workouts. Add a workout using the sidebar.</p>}
             {upcomingWorkouts.map((w) => (
-                <div key={w.id} style={{ border: '2px solid #333', borderRadius: '20px', marginBottom: '1rem', maxWidth: '400px' }}>
-                  <Link href={`/workouts/${w.id}`} style={{ display: 'block', padding: '1rem' }}>
-                    <p>{formatDateForDisplay(w.date)}</p>
-                    <h3>{w.name ?? 'Untitled Workout'}</h3>
-                    {w.logged_sets.map((s) => (
-                      <p key={s.id}>
-                        {s.exercises?.name ?? 'Unknown exercise'} - {s.weight}lbs - {s.reps} reps
-                      </p>
-                    ))}
-                  </Link>
-                </div>
-            ))}
-            {upcomingWorkouts.length !== 0 && <p><Link href="/workouts">See all</Link></p>}
+            <WorkoutCard
+              key={w.id}
+              workout={w}
+              isSelected={false}
+              onToggleSelect={() => {return}}
+              onCompleted={(id, completed) => handleWorkoutCompletionChange(id, completed)}
+            />
+          ))}
+          {upcomingWorkouts.length !== 0 && <p><Link href="/workouts">See all</Link></p>}
         </div>
     </div>
   )
