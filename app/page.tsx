@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [upcomingWorkouts, setUpcomingWorkouts] = useState<Workout[]>([])
   const [selectedWorkouts, setSelectedWorkouts] = useState<Set<number>>(new Set())
-  const { user } = useAuth()
+  const { user, username } = useAuth()
 
   useEffect(() => {
     supabase
@@ -67,7 +67,7 @@ export default function Dashboard() {
 
   return (
     <div style={{ padding: '2rem' }}>
-      {user ? <h1>Hello, {user.email}!</h1> : <h1>You are not signed in.</h1>}
+      {user ? <h1>Hello, {username}!</h1> : <h1>You are not signed in.</h1>}
 
       <h2 style={{ paddingLeft: '2rem' }}>Recent Workouts</h2>
         <div style={{ padding: '1rem',

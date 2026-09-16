@@ -42,7 +42,13 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
                 {isCollapsed ? '→' : '←'}
             </button>
 
-            {!user && <Link href="/login">Sign In</Link>}
+            {!user &&
+                <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                    <Link href="/login">Sign In</Link>
+                    <p>|</p>
+                    <Link href="/signup">Sign Up</Link>
+                </div>
+            }
 
             {!isCollapsed && (
                 <ul style={{ listStyle: 'none', padding: 0 }}>
