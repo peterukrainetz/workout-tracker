@@ -17,3 +17,15 @@ export type Workout = {
   }[]
   completed: boolean
 }
+
+export type Template = {
+  id: number
+  name: string | null
+  template_sets: {
+    id: number
+    weight: number
+    reps: number
+    exercises: { name: string } | null
+  }[]
+  completed: boolean
+}
