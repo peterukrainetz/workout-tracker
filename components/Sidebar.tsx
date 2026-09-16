@@ -31,7 +31,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
                 top: 0,
                 left: 0,
                 height: '100vh',
-                width: isCollapsed ? '0px' : '70px',
+                minWidth: isCollapsed ? '0px' : '70px',
                 padding: '1rem',
                 borderRight: '1px solid #333',
                 display: 'flex',
