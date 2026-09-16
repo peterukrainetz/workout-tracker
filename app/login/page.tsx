@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
@@ -13,6 +13,14 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
+
+    const { data: email, error: lookupError } = await supabase
+      .rpc('get_email_for_username', { uname: username })
+
+    if (lookupError || !email) {
+      setError('Invalid username or password')
+      return
+    }
 
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
@@ -27,11 +35,11 @@ export default function LoginPage() {
       <h1>Log In</h1>
       <form onSubmit={handleLogin}>
         <div>
-          <label>Email</label>
+          <label>Username</label>
           <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
             />
         </div>
