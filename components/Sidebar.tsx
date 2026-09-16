@@ -44,7 +44,7 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
 
             {!user &&
                 <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-                    <Link href="/login">Sign In</Link>
+                    <Link href="/signin">Sign In</Link>
                     <p>|</p>
                     <Link href="/signup">Sign Up</Link>
                 </div>

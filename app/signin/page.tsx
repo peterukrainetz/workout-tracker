@@ -32,7 +32,7 @@ export default function LoginPage() {
 
   return (
     <div style={{ padding: '2rem', maxWidth: '400px' }}>
-      <h1>Log In</h1>
+      <h1>Sign In</h1>
       <form onSubmit={handleLogin}>
         <div>
           <label>Username</label>
@@ -54,7 +54,7 @@ export default function LoginPage() {
             />
         </div>
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="submit">Log In</button>
+        <button type="submit">Confirm</button>
       </form>
     </div>
   )
