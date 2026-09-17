@@ -8,8 +8,8 @@ import Modal from './Modal'
 import { useRouter } from 'next/navigation'
 import { UserRound, Plus, House,
         NotebookText, Weight,
-        CalendarDays, CircleStar,
-        Medal, Calculator, Timer } from 'lucide-react'
+        CalendarDays, Medal,
+        Calculator, Timer } from 'lucide-react'
 
 type SidebarProps = {
     isExpanded: boolean
@@ -32,6 +32,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
         <>
             <div onMouseEnter={() => setIsExpanded(true)}
                 onMouseLeave={() => setIsExpanded(false)}
+                onClick={() => setIsExpanded(false)}
             >
                 <nav style={{
                     position: 'fixed',
