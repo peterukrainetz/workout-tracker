@@ -12,7 +12,7 @@ export default function AppShell({ children }: {children: React.ReactNode }) {
             <div style={{
                 display: 'flex',
                 justifyContent: 'center',
-                marginLeft: '75px',
+                marginLeft: isExpanded ? '150px' : '56px',
                 height: '100vh'
             }}>
                 {children}
