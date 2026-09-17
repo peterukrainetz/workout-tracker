@@ -4,11 +4,11 @@ import { useState } from 'react'
 import Sidebar from './Sidebar'
 
 export default function AppShell({ children }: {children: React.ReactNode }) {
-    const [isCollapsed, setIsCollapsed] = useState(false)
+    const [isExpanded, setIsExpanded] = useState(false)
 
     return (
         <div>
-            <Sidebar isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+            <Sidebar isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
             <div style={{
                 display: 'flex',
                 justifyContent: 'center',

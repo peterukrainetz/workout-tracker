@@ -6,19 +6,22 @@ import { useAuth } from '@/context/AuthContext'
 import { useState } from 'react'
 import Modal from './Modal'
 import { useRouter } from 'next/navigation'
-import { Plus, House, NotebookText, Weight, CalendarDays, Check } from 'lucide-react'
+import { UserRound, Plus, House, NotebookText, Weight,
+        CalendarDays, CircleStar,
+        Medal, Calculator, Timer } from 'lucide-react'
 
 type SidebarProps = {
-    isCollapsed: boolean
-    setIsCollapsed: (value: boolean) => void
+    isExpanded: boolean
+    setIsExpanded: (value: boolean) => void
 }
 
-export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
+export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
     const [showWorkoutPicker, setShowWorkoutPicker] = useState(false)
     const { user } = useAuth()
     const router = useRouter()
 
     const liStyle = { paddingBottom: '15px' }
+    const descStyle = { paddingLeft: '1rem' }
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
@@ -26,58 +29,108 @@ export default function Sidebar({ isCollapsed, setIsCollapsed }: SidebarProps) {
 
     return (
         <>
-            <nav style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                height: '100vh',
-                minWidth: isCollapsed ? '0px' : '70px',
-                padding: '1rem',
-                borderRight: '1px solid #333',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'width 1s ease-in-out, padding 1s ease-in-out'
-            }}>
-                {!user &&
-                    <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
-                        <Link href="/signin">Sign In</Link>
-                        <p>|</p>
-                        <Link href="/signup">Sign Up</Link>
-                    </div>
-                }
+            <div onMouseEnter={() => setIsExpanded(true)}
+                onMouseLeave={() => setIsExpanded(false)}
+            >
+                <nav style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    height: '100vh',
+                    width: isExpanded ? '150px' : '56px',
+                    padding: '1rem',
+                    borderRight: '1px solid #333',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    transition: 'width 0.2s ease-in-out, padding 0.1s ease-in-out',
+                    overflowX: 'hidden'
+                }}>
+                    <button style={{ marginLeft: '-4px', paddingBottom: '2rem' }} onClick={() => router.push('/signin')}>
+                        <UserRound style={{
+                            padding: '0.5rem',
+                            border: '1px solid #333',
+                            borderRadius: '50%'
+                        }}
+                            size={'2.25rem'}/>
+                    </button>
 
-                {!isCollapsed && (
-                    <>
-                        <ul style={{
-                            padding: 0,
-                            display: 'flex',
-                            listStyle: 'none',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}>
-                            <li>
-                                <button style={{ cursor: 'pointer', paddingBottom: '12px' }}
-                                    onClick={() => setShowWorkoutPicker(true)}
-                                >
+                    <ul style={{
+                        padding: 0,
+                        display: 'flex',
+                        listStyle: 'none',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                    }}>
+                        <Link href="/signup"></Link>
+                        <li>
+                            <button style={{ cursor: 'pointer', paddingBottom: '12px' }}
+                                onClick={() => setShowWorkoutPicker(true)}
+                            >
+                                <div style={{ display: 'flex' }}>
                                     <Plus size={'1.5rem'}/>
-                                </button>
-                            </li>
-                            <li style={liStyle}><Link href="/"><House size={'1.5rem'}/></Link></li>
-                            <li style={liStyle}><Link href="/workouts"><NotebookText size={'1.5rem'}/></Link></li>
-                            <li style={liStyle}><Link href="/exercises"><Weight size={'1.5rem'}/></Link></li>
-                            <li style={liStyle}><Link href="/calendar"><CalendarDays size={'1.5rem'}/></Link></li>
-                            <li style={liStyle}><Link href="/goals"><Check size={'1.5rem'}/></Link></li>
-                            <li>Tools</li>
-                            <li style={{ paddingLeft: '1rem' }}><Link href="/1rm">1RM Tool</Link></li>
-                            <li style={{ paddingLeft: '1rem' }}><Link href="/calculator">Calculator</Link></li>
-                            <li style={{ paddingLeft: '1rem' }}><Link href="/timer">Timer</Link></li>
-                        </ul>
-
-                        {user && 
-                            <button onClick={handleLogout} style={{ marginTop: 'auto' }}>Sign Out</button>}
-                    </>
-               )}
-            </nav>
+                                        <p style={descStyle}>Create</p>
+                                </div>
+                            </button>
+                        </li>
+                        <li style={liStyle}>
+                            <Link href="/">
+                                <div style={{ display: 'flex' }}>
+                                    <House size={'1.5rem'}/>
+                                        <p style={descStyle}>Dashboard</p>
+                                </div>
+                            </Link>
+                        </li>
+                        <li style={liStyle}>
+                            <Link href="/workouts">
+                                <div style={{ display: 'flex' }}>
+                                    <NotebookText size={'1.5rem'}/>
+                                        <p style={descStyle}>Workouts</p>
+                                </div>
+                            </Link>
+                        </li>
+                        <li style={liStyle}>
+                            <Link href="/exercises">
+                                <div style={{ display: 'flex' }}>
+                                    <Weight size={'1.5rem'}/>
+                                        <p style={descStyle}>Exercises</p>
+                                </div>
+                            </Link>
+                        </li>
+                        <li style={liStyle}>
+                            <Link href="/calendar">
+                                <div style={{ display: 'flex' }}>
+                                    <CalendarDays size={'1.5rem'}/>
+                                        <p style={descStyle}>Calendar</p>
+                                </div>
+                            </Link>
+                        </li>
+                        <li style={liStyle}>
+                            <Link href="/goals">
+                                <div style={{ display: 'flex' }}>
+                                    <Medal size={'1.5rem'}/>
+                                        <p style={descStyle}>Goals</p>
+                                </div>
+                            </Link>
+                        </li>
+                        <li style={liStyle}>
+                            <Link href="/calculator">
+                                <div style={{ display: 'flex' }}>
+                                    <Calculator size={'1.5rem'}/>
+                                        <p style={descStyle}>Calculator</p>
+                                </div>
+                            </Link>
+                        </li>
+                        <li style={liStyle}>
+                            <Link href="/timer">
+                                <div style={{ display: 'flex' }}>
+                                    <Timer size={'1.5rem'}/>
+                                        <p style={descStyle}>Timer</p>
+                                </div>
+                            </Link>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
 
             <Modal isOpen={showWorkoutPicker} onClose={() => setShowWorkoutPicker(false)}>
                 <h1 style={{ justifySelf: 'center' }}>Create</h1>
