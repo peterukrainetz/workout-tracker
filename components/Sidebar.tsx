@@ -42,7 +42,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                     borderRight: '1px solid #333',
                     display: 'flex',
                     flexDirection: 'column',
-                    transition: 'width 0.2s ease-in-out, padding 0.1s ease-in-out',
+                    transition: 'width 0.2s ease-in-out',
                     overflowX: 'hidden'
                 }}>
                     <button style={{ marginLeft: '-4px', paddingBottom: '2rem' }} onClick={() => router.push('/signin')}>

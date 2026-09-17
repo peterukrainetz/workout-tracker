@@ -13,7 +13,8 @@ export default function AppShell({ children }: {children: React.ReactNode }) {
                 display: 'flex',
                 justifyContent: 'center',
                 marginLeft: isExpanded ? '150px' : '56px',
-                height: '100vh'
+                height: '100vh',
+                transition: 'margin-left 0.2s ease-in-out'
             }}>
                 {children}
             </div>
