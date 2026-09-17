@@ -5,6 +5,7 @@ import { Workout } from '@/lib/types'
 import { useState } from 'react'
 import { formatDateForDisplay } from '@/lib/date'
 import { useRouter } from 'next/navigation'
+import { Circle, CircleCheck, CircleX } from 'lucide-react'
 
 type WorkoutCardProps = {
     workout: Workout
@@ -51,9 +52,7 @@ export default function WorkoutCard({ workout, isSelected, onToggleSelect, onCom
                 padding: '1rem',
                 cursor: 'pointer'
             }}>
-                <div style={{
-                display: 'flex'
-                }}>
+                <div style={{ display: 'flex' }}>
                     <button onClick={(e) => {
                         e.stopPropagation()
                         onToggleSelect()
@@ -63,7 +62,7 @@ export default function WorkoutCard({ workout, isSelected, onToggleSelect, onCom
                         paddingRight: '1rem',
                         cursor: 'pointer'
                     }}>
-                        O
+                        <Circle size={'1rem'}/>
                     </button>
 
                     <div style={{ flex: '1' }}>
@@ -84,13 +83,22 @@ export default function WorkoutCard({ workout, isSelected, onToggleSelect, onCom
                             (Completed)
                         </p>}
 
-                        <button onClick={(e) => {
+                    <button onClick={(e) => {
                             e.stopPropagation()
                             handleMarkCompleted()
                         }}
-                        style={{ alignSelf: 'flex-end', marginTop: 'auto', cursor: 'pointer' }}
+                        style={{
+                            alignSelf: 'flex-end',
+                            marginTop: 'auto',
+                            cursor: 'pointer',
+                            paddingLeft: '1rem'
+                        }}
                         >
-                            {workout.completed ? 'Mark Incomplete' : 'Complete'}
+                            {workout.completed ? (
+                                <CircleX size={'1rem'}/>
+                            ) : (
+                                <CircleCheck size={'1rem'}/>
+                            )}
                         </button>
 
                         {error && <p style={{ color: 'red' }}>{error}</p>}

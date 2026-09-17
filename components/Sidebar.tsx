@@ -6,7 +6,8 @@ import { useAuth } from '@/context/AuthContext'
 import { useState } from 'react'
 import Modal from './Modal'
 import { useRouter } from 'next/navigation'
-import { UserRound, Plus, House, NotebookText, Weight,
+import { UserRound, Plus, House,
+        NotebookText, Weight,
         CalendarDays, CircleStar,
         Medal, Calculator, Timer } from 'lucide-react'
 
@@ -47,7 +48,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                 }}>
                     <button style={{ marginLeft: '-4px', paddingBottom: '2rem' }} onClick={() => router.push('/signin')}>
                         <UserRound style={{
-                            padding: '0.5rem',
+                            padding: '.5rem',
                             border: '1px solid #333',
                             borderRadius: '50%'
                         }}

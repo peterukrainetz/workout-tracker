@@ -5,6 +5,7 @@ import { Template } from '@/lib/types'
 import { useState } from 'react'
 import { formatDateForDisplay } from '@/lib/date'
 import { useRouter } from 'next/navigation'
+import { Circle } from 'lucide-react'
 
 type TemplateCardProps = {
     template: Template
@@ -44,7 +45,7 @@ export default function WorkoutCard({ template, isSelected, onToggleSelect, onIn
                         paddingRight: '1rem',
                         cursor: 'pointer'
                     }}>
-                        O
+                        <Circle size={'1rem'}/>
                     </button>
 
                     <div style={{ flex: '1' }}>

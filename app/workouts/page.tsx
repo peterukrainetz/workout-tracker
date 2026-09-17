@@ -5,11 +5,13 @@ import { supabase } from '@/lib/supabase'
 import WorkoutCard from '@/components/WorkoutCard'
 import TemplateCard from '@/components/TemplateCard'
 import { Workout, Template } from '@/lib/types'
+import { CircleChevronRight, CircleChevronDown } from 'lucide-react'
 
 export default function Workouts() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [templates, setTemplates] = useState<Template[]>([])
   const [templatesIsOpen, setTemplatesIsOpen] = useState(true)
+  const [workoutsIsOpen, setWorkoutsIsOpen] = useState(true)
 
   useEffect(() => {
     // Read workout data associated with user
@@ -35,12 +37,16 @@ export default function Workouts() {
   return (
     <div style={{ padding: '2rem' }}>
       <div style={{ display: 'flex' }}>
-        <h1 style={{ marginBottom: '1rem', paddingRight: '20px' }}>Templates</h1>
+        <h1 style={{ marginBottom: '1rem', paddingRight: '5px' }}>Templates</h1>
         <button
-          style={{ marginBottom: 'auto'}}
+          style={{ marginTop: '-16px'}}
           onClick={() => setTemplatesIsOpen(!templatesIsOpen)}
         >
-          {templatesIsOpen ? '⌄' : '>'}
+          {templatesIsOpen ? (
+              <CircleChevronDown size={'1rem'}/>
+          ) : (
+              <CircleChevronRight size={'1rem'}/>
+          )}
         </button>
       </div>
 
@@ -59,23 +65,40 @@ export default function Workouts() {
         </>
       )}
 
-      <h1 style={{ marginBottom: '1rem' }}>Workouts</h1>
-      {workouts.length === 0 && <p>No logged workouts. Add a workout using the sidebar.</p>}
-      {workouts.map((w) => (
-          <WorkoutCard
-            key={w.id}
-            workout={w}
-            isSelected={false}
-            onToggleSelect={() => {return}}
-            onCompleted={(id, completed) => {
-              setWorkouts(
-                workouts.map((w) => 
-                  w.id === id ? { ...w, completed } : w
-                )
-              )
-            }}
-          />
-      ))}
+      <div style={{ display: 'flex' }}>
+        <h1 style={{ marginBottom: '1rem', paddingRight: '5px' }}>Workouts</h1>
+        <button
+          style={{ marginTop: '-16px'}}
+          onClick={() => setWorkoutsIsOpen(!workoutsIsOpen)}
+        >
+          {workoutsIsOpen ? (
+              <CircleChevronDown size={'1rem'}/>
+          ) : (
+              <CircleChevronRight size={'1rem'}/>
+          )}
+        </button>
+      </div>
+
+      {workoutsIsOpen && (
+        <>
+          {workouts.length === 0 && <p>No logged workouts. Add a workout using the sidebar.</p>}
+          {workouts.map((w) => (
+              <WorkoutCard
+                key={w.id}
+                workout={w}
+                isSelected={false}
+                onToggleSelect={() => {return}}
+                onCompleted={(id, completed) => {
+                  setWorkouts(
+                    workouts.map((w) => 
+                      w.id === id ? { ...w, completed } : w
+                    )
+                  )
+                }}
+              />
+          ))}
+        </>
+      )}
     </div>
   )
 }
