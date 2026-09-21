@@ -8,6 +8,7 @@ import ExerciseMenu from '@/components/ExerciseMenu'
 import { Exercise } from '@/lib/types'
 import { useAuth } from '@/context/AuthContext'
 import ExerciseHandler from '@/components/ExerciseHandler'
+import { Trash, Copy } from 'lucide-react'
 
 type DraftSet = {
     id: string
@@ -49,6 +50,16 @@ export default function CreateWorkoutPage() {
         }
 
         setDraftSets([...draftSets, newRow])
+    }
+
+    const handleDuplicateRow = () => {
+        const foundRow = draftSets.find((item) => activeRowId === item.id)
+
+        const duplicateRow: DraftSet = foundRow
+            ? { ...foundRow, id: crypto.randomUUID() }
+            : { id: crypto.randomUUID(), exercise_id: null, weight: null, reps: null }
+
+        setDraftSets([...draftSets, duplicateRow])
     }
 
     const handleSaveWorkout = async () => {
@@ -116,13 +127,13 @@ export default function CreateWorkoutPage() {
                     <label>Date: </label>
                     <input type='date' value={date} onChange={(e) => setDate(e.target.value)} required style={{ colorScheme: 'light dark' }}/>
                 </div>
+                
                 <table>
                     <thead>
                         <tr>
                             <th>Exercise</th>
                             <th>Weight</th>
                             <th>Reps</th>
-                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -163,9 +174,20 @@ export default function CreateWorkoutPage() {
                                         }
                                     />
                                 </td>
-                                <td>
+                                <td style={{ display: 'flex' }}>
+                                    <button
+                                        style={{ paddingRight: '0.5rem' }}
+                                        onClick={() => {
+                                                setActiveRowId(row.id)
+                                                handleDuplicateRow()
+                                            }
+                                        }
+                                    >
+                                        <Copy size={'1rem'} />
+                                    </button>
+
                                     <button onClick={() => setDraftSets(draftSets.filter((r) => r.id !== row.id))}>
-                                        Remove
+                                        <Trash size={'1rem'} />
                                     </button>
                                 </td>
                             </tr>

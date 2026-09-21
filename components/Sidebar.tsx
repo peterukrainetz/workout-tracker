@@ -6,10 +6,12 @@ import { useAuth } from '@/context/AuthContext'
 import { useState } from 'react'
 import Modal from './Modal'
 import { useRouter } from 'next/navigation'
-import { UserRound, Plus, House,
-        NotebookText, Weight,
-        CalendarDays, Medal,
-        Calculator, Timer } from 'lucide-react'
+import {
+    UserRound, Plus, House,
+    NotebookText, Weight,
+    CalendarDays, Medal,
+    Calculator, Timer
+} from 'lucide-react'
 
 type SidebarProps = {
     isExpanded: boolean
@@ -53,7 +55,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                             border: '1px solid #333',
                             borderRadius: '50%'
                         }}
-                            size={'2.25rem'}/>
+                            size={'2.25rem'} />
                     </button>
 
                     <ul style={{
@@ -69,64 +71,64 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                                 onClick={() => setShowWorkoutPicker(true)}
                             >
                                 <div style={{ display: 'flex' }}>
-                                    <Plus size={'1.5rem'}/>
-                                        <p style={descStyle}>Create</p>
+                                    <Plus size={'1.5rem'} />
+                                    <p style={descStyle}>Create</p>
                                 </div>
                             </button>
                         </li>
                         <li style={liStyle}>
                             <Link href="/">
                                 <div style={{ display: 'flex' }}>
-                                    <House size={'1.5rem'}/>
-                                        <p style={descStyle}>Dashboard</p>
+                                    <House size={'1.5rem'} />
+                                    <p style={descStyle}>Dashboard</p>
                                 </div>
                             </Link>
                         </li>
                         <li style={liStyle}>
                             <Link href="/workouts">
                                 <div style={{ display: 'flex' }}>
-                                    <NotebookText size={'1.5rem'}/>
-                                        <p style={descStyle}>Workouts</p>
+                                    <NotebookText size={'1.5rem'} />
+                                    <p style={descStyle}>Workouts</p>
                                 </div>
                             </Link>
                         </li>
                         <li style={liStyle}>
                             <Link href="/exercises">
                                 <div style={{ display: 'flex' }}>
-                                    <Weight size={'1.5rem'}/>
-                                        <p style={descStyle}>Exercises</p>
+                                    <Weight size={'1.5rem'} />
+                                    <p style={descStyle}>Exercises</p>
                                 </div>
                             </Link>
                         </li>
                         <li style={liStyle}>
                             <Link href="/calendar">
                                 <div style={{ display: 'flex' }}>
-                                    <CalendarDays size={'1.5rem'}/>
-                                        <p style={descStyle}>Calendar</p>
+                                    <CalendarDays size={'1.5rem'} />
+                                    <p style={descStyle}>Calendar</p>
                                 </div>
                             </Link>
                         </li>
                         <li style={liStyle}>
                             <Link href="/goals">
                                 <div style={{ display: 'flex' }}>
-                                    <Medal size={'1.5rem'}/>
-                                        <p style={descStyle}>Goals</p>
+                                    <Medal size={'1.5rem'} />
+                                    <p style={descStyle}>Goals</p>
                                 </div>
                             </Link>
                         </li>
                         <li style={liStyle}>
                             <Link href="/calculator">
                                 <div style={{ display: 'flex' }}>
-                                    <Calculator size={'1.5rem'}/>
-                                        <p style={descStyle}>Calculator</p>
+                                    <Calculator size={'1.5rem'} />
+                                    <p style={descStyle}>Calculator</p>
                                 </div>
                             </Link>
                         </li>
                         <li style={liStyle}>
                             <Link href="/timer">
                                 <div style={{ display: 'flex' }}>
-                                    <Timer size={'1.5rem'}/>
-                                        <p style={descStyle}>Timer</p>
+                                    <Timer size={'1.5rem'} />
+                                    <p style={descStyle}>Timer</p>
                                 </div>
                             </Link>
                         </li>

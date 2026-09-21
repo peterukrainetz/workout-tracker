@@ -35,7 +35,7 @@ export default function Workouts() {
   }, [])
 
   return (
-    <div style={{ padding: '2rem' }}>
+    <div style={{ padding: '2rem', width: '90vw', justifyItems: 'center' }}>
       <div style={{ display: 'flex' }}>
         <h1 style={{ marginBottom: '1rem', paddingRight: '5px' }}>Templates</h1>
         <button
@@ -51,7 +51,7 @@ export default function Workouts() {
       </div>
 
       {templatesIsOpen && (
-        <>
+        <div style={{ justifyItems: 'left' }}>
           {templates.length === 0 && <p>No templates. Add a template using the sidebar.</p>}
           {templates.map((t) => (
               <TemplateCard
@@ -62,7 +62,7 @@ export default function Workouts() {
                 onInstantiate={() => {return}}
               />
           ))}
-        </>
+        </div>
       )}
 
       <div style={{ display: 'flex' }}>
@@ -80,7 +80,7 @@ export default function Workouts() {
       </div>
 
       {workoutsIsOpen && (
-        <>
+        <div style={{ justifyItems: 'left' }}>
           {workouts.length === 0 && <p>No logged workouts. Add a workout using the sidebar.</p>}
           {workouts.map((w) => (
               <WorkoutCard
@@ -97,7 +97,7 @@ export default function Workouts() {
                 }}
               />
           ))}
-        </>
+        </div>
       )}
     </div>
   )

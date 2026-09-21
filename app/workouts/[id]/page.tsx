@@ -8,6 +8,7 @@ import Modal from '@/components/Modal'
 import ExerciseMenu from '@/components/ExerciseMenu'
 import { Exercise } from '@/lib/types'
 import ExerciseHandler from '@/components/ExerciseHandler'
+import { Trash, Copy, FileX } from 'lucide-react'
 
 type DraftSet = {
     id: string
@@ -85,6 +86,16 @@ export default function EditWorkoutPage() {
         }
 
         setDraftSets([...draftSets, newRow])
+    }
+
+    const handleDuplicateRow = () => {
+        const foundRow = draftSets.find((item) => activeRowId === item.id)
+
+        const duplicateRow: DraftSet = foundRow
+            ? { ...foundRow, id: crypto.randomUUID() }
+            : { id: crypto.randomUUID(), exercise_id: null, weight: null, reps: null }
+
+        setDraftSets([...draftSets, duplicateRow])
     }
 
     const handleUpdateWorkout = async () => {
@@ -223,11 +234,22 @@ export default function EditWorkoutPage() {
                                             }
                                         />
                                     </td>
-                                    <td>
-                                        <button onClick={() => setDraftSets(draftSets.filter((r) => r.id !== row.id))}>
-                                            Remove
-                                        </button>
-                                    </td>
+                                    <td style={{ display: 'flex' }}>
+                                    <button
+                                        style={{ paddingRight: '0.5rem' }}
+                                        onClick={() => {
+                                                setActiveRowId(row.id)
+                                                handleDuplicateRow()
+                                            }
+                                        }
+                                    >
+                                        <Copy size={'1rem'} />
+                                    </button>
+
+                                    <button onClick={() => setDraftSets(draftSets.filter((r) => r.id !== row.id))}>
+                                        <Trash size={'1rem'} />
+                                    </button>
+                                </td>
                                 </tr>
                             ))}
                         </tbody>

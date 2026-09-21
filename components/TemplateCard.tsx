@@ -1,11 +1,8 @@
 'use client'
 
-import { supabase } from '@/lib/supabase'
 import { Template } from '@/lib/types'
-import { useState } from 'react'
-import { formatDateForDisplay } from '@/lib/date'
 import { useRouter } from 'next/navigation'
-import { Circle } from 'lucide-react'
+import { Circle, CalendarPlus } from 'lucide-react'
 
 type TemplateCardProps = {
     template: Template
@@ -63,10 +60,13 @@ export default function WorkoutCard({ template, isSelected, onToggleSelect, onIn
                     }} 
                     style={{
                         alignSelf: 'flex-start',
-                        paddingRight: '1rem',
-                        cursor: 'pointer'
-                    }}>
-                        Use Template
+                        paddingLeft: '1rem',
+                        cursor: 'pointer',
+                        marginLeft: 'auto'
+                    }}
+                    title='Plan workout with template'
+                    >
+                        <CalendarPlus size={'1rem'} />
                     </button>
                 </div>  
             </div>
