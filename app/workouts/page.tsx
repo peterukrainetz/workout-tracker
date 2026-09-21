@@ -27,7 +27,7 @@ export default function Workouts() {
   useEffect(() => {
     supabase
       .from('workout_templates')
-      .select('id, name, template_sets(id, weight, reps, exercises(name))')
+      .select('id, name, template_sets(id, weight, reps, exercise_id, exercises(name))')
       .order('name', { ascending: true})
       .then(({ data }) => {
         if (data) setTemplates(data as unknown as Template[])

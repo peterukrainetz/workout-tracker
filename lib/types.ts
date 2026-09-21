@@ -21,11 +21,12 @@ export type Workout = {
 export type Template = {
   id: number
   name: string | null
+  description: string | null
   template_sets: {
     id: number
     weight: number
     reps: number
+    exercise_id: number | null
     exercises: { name: string } | null
   }[]
-  completed: boolean
 }

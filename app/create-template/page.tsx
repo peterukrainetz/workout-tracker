@@ -144,7 +144,7 @@ export default function CreateTemplatePage() {
                                 </td>
                                 <td>
                                     <input
-                                        type="number"
+                                        type='number'
                                         value={row.weight ?? ''}
                                         onChange={(e) => 
                                             setDraftSets(
@@ -157,7 +157,7 @@ export default function CreateTemplatePage() {
                                 </td>
                                 <td>
                                     <input
-                                        type="number"
+                                        type='number'
                                         value={row.reps ?? ''}
                                         onChange={(e) => 
                                             setDraftSets(
