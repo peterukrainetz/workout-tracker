@@ -8,7 +8,7 @@ import Modal from '@/components/Modal'
 import ExerciseMenu from '@/components/ExerciseMenu'
 import { Exercise } from '@/lib/types'
 import ExerciseHandler from '@/components/ExerciseHandler'
-import { Trash, Copy, FileX } from 'lucide-react'
+import { Trash, Copy } from 'lucide-react'
 
 type DraftSet = {
     id: string
@@ -235,21 +235,21 @@ export default function EditWorkoutPage() {
                                         />
                                     </td>
                                     <td style={{ display: 'flex' }}>
-                                    <button
-                                        style={{ paddingRight: '0.5rem' }}
-                                        onClick={() => {
-                                                setActiveRowId(row.id)
-                                                handleDuplicateRow()
+                                        <button
+                                            style={{ paddingRight: '0.5rem' }}
+                                            onClick={() => {
+                                                    setActiveRowId(row.id)
+                                                    handleDuplicateRow()
+                                                }
                                             }
-                                        }
-                                    >
-                                        <Copy size={'1rem'} />
-                                    </button>
+                                        >
+                                            <Copy size={'1rem'} />
+                                        </button>
 
-                                    <button onClick={() => setDraftSets(draftSets.filter((r) => r.id !== row.id))}>
-                                        <Trash size={'1rem'} />
-                                    </button>
-                                </td>
+                                        <button onClick={() => setDraftSets(draftSets.filter((r) => r.id !== row.id))}>
+                                            <Trash size={'1rem'} />
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
