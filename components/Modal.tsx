@@ -19,6 +19,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
                 width: '100%',
                 height: '100%',
                 backgroundColor: 'rgba(0,0,0,0.5)',
+                zIndex: 1000
             }}>
                 <div onClick={(e) => e.stopPropagation()} style={{
                     padding: '2rem',
