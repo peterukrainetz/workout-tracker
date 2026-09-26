@@ -17,7 +17,7 @@ type DraftSet = {
 }
 
 export default function CreateTemplatePage() {
-    const [name, setName] = useState('New Workout')
+    const [name, setName] = useState('New Template')
     const [description, setDescription] = useState('')
     const [draftSets, setDraftSets] = useState<DraftSet[]>([])
     const [exercises, setExercises] = useState<Exercise[]>([])
@@ -106,7 +106,7 @@ export default function CreateTemplatePage() {
             return
         }
 
-        router.push('/')
+        router.push('/workouts')
     }
 
     return (
@@ -115,7 +115,7 @@ export default function CreateTemplatePage() {
                 <div>
                     <input
                         type='text'
-                        defaultValue='New Template'
+                        value={name}
                         style={{ border: '2px dashed #d4d4d4', borderRadius: '8px', padding: '5px'}}
                         onChange={(e) => setName(e.target.value)}
                         required
