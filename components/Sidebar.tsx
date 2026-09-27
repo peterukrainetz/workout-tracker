@@ -34,7 +34,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
         <>
             <div onMouseEnter={() => setIsExpanded(true)}
                 onMouseLeave={() => setIsExpanded(false)}
-                style={{ position: 'fixed', zIndex: 1000 }}
+                style={{ position: 'fixed', zIndex: 500 }}
             >
                 <nav style={{
                     position: 'fixed',
@@ -44,6 +44,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                     width: isExpanded ? '150px' : '56px',
                     padding: '1rem',
                     borderRight: '1px solid #333',
+                    backgroundColor: '#0a0a0a',
                     display: 'flex',
                     flexDirection: 'column',
                     transition: 'width 0.2s ease-in-out',

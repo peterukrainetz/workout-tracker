@@ -30,6 +30,18 @@ export default function EditTemplatePage() {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
     const router = useRouter()
     const { id } = useParams()
+    const [originalData, setOriginalData] = useState<{
+            name: string
+            description: string
+            draftSets: DraftSet[]
+        } | null>(null)
+    
+    // Tracks whether changes have been made
+    const isDirty =
+        originalData !== null
+        && JSON.stringify({ name, description, draftSets }) !== JSON.stringify(originalData)
+    const [showLeaveWarning, setShowLeaveWarning] = useState(false)
+    const [pendingHref, setPendingHref] = useState<string | null>(null)
 
     // Load exercise list
     useEffect(() => {
@@ -66,6 +78,13 @@ export default function EditTemplatePage() {
                 }))
 
                 setDraftSets(mapped ?? [])
+                
+                setOriginalData({
+                    name: data?.name ?? 'Untitled Workout',
+                    description: data?.description ?? '',
+                    draftSets: mapped ?? []
+                })
+
                 setIsLoading(false)
             })
     },[id])
@@ -73,6 +92,41 @@ export default function EditTemplatePage() {
     if (notFoundState) {
         notFound()
     }
+
+    // Warn user before leaving the page
+    useEffect(() => {
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            if (isDirty) {
+                e.preventDefault()
+            }
+        }
+
+        window.addEventListener('beforeunload', handleBeforeUnload)
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+
+    }, [isDirty])
+
+    // Warn user before leaving the page after clicking a link
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            if (!isDirty) return
+
+            const target = e.target as HTMLElement
+            const anchor = target.closest('a')
+
+            if (!anchor) return
+
+            const href = anchor.getAttribute('href')
+            if (!href) return
+
+            e.preventDefault()
+            setPendingHref(href)
+            setShowLeaveWarning(true)
+        }
+
+        document.addEventListener('click', handleClick, true)
+        return () => document.removeEventListener('click', handleClick, true)
+    }, [isDirty])
 
     const handleAddRow = () => {
         const newRow: DraftSet = {
@@ -320,6 +374,25 @@ export default function EditTemplatePage() {
                     setExercises([...exercises, newExercise])
                 }}
             />
+
+            <Modal isOpen={showLeaveWarning} onClose={() => setShowLeaveWarning(false)}>
+                <h1>Unsaved Changes</h1>
+                <p>Your changes will be discarded. Are you sure you want to leave?</p>
+                <div style={{ display: 'flex', justifyContent: 'space-evenly' }}>
+                    <button
+                        style={{ color: 'red' }}
+                        onClick={() => {
+                            if (pendingHref) {
+                                router.push(pendingHref)
+                            }
+                            setShowLeaveWarning(false)
+                        }}
+                    >
+                        Don't save
+                    </button>
+                    <button onClick={() => setShowLeaveWarning(false)}>Cancel</button>
+                </div>
+            </Modal>
         </>
     )
 }
