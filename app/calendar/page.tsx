@@ -62,7 +62,7 @@ export default function Calendar() {
                     width: '100%',
                     padding: '0.5rem',
                     border: '1px solid #333',
-                    borderRadius: '20px',
+                    borderRadius: '20%',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'flex-start',

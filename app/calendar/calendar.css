@@ -1,6 +1,17 @@
 .rdp-root {
-    --rdp-day-width: 100px;
-    --rdp-day-height: 100px;
-    --rdp-day_button-width: 97px;
-    --rdp-day_button-height: 97px;
+    --rdp-day-width: clamp(30px, 10vw, 100px);
+    --rdp-day-height: clamp(30px, 10vw, 100px);
+    --rdp-day_button-width: clamp(30px, 10vw, 100px);
+    --rdp-day_button-height: clamp(30px, 10vw, 100px);
 }
+
+/*
+@media (max-width: 600px) {
+    .rdp-root {
+        --rdp-day-width: 40px;
+        --rdp-day-height: 40px;
+        --rdp-day_button-width: 40px;
+        --rdp-day_button-height: 40px;
+    }
+}
+*/
