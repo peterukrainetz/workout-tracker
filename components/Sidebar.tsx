@@ -10,7 +10,8 @@ import {
     UserRound, Plus, House,
     NotebookText, Weight,
     CalendarDays, Medal,
-    Calculator, Timer
+    Calculator, Timer,
+    Pointer
 } from 'lucide-react'
 
 type SidebarProps = {
@@ -20,7 +21,7 @@ type SidebarProps = {
 
 export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
     const [showWorkoutPicker, setShowWorkoutPicker] = useState(false)
-    const { user } = useAuth()
+    const { user, username } = useAuth()
     const router = useRouter()
 
     const liStyle = { paddingBottom: '15px' }
@@ -50,17 +51,36 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                     transition: 'width 0.2s ease-in-out',
                     overflowX: 'hidden'
                 }}>
-                    <button style={{ marginLeft: '-4px', paddingBottom: '2rem' }} onClick={() => router.push('/signin')}>
-                        <UserRound style={{
-                            padding: '.5rem',
-                            border: '1px solid #333',
-                            borderRadius: '50%'
-                        }}
-                            size={'2.25rem'} />
-                    </button>
+                    <div style={{ display: 'flex' }}>
+                        <button style={{
+                                justifySelf: 'center',
+                                paddingRight: '3rem',
+                                width: '2.25rem',
+                                height: '2rem',
+                                cursor: 'pointer'
+                            }}
+                            onClick={() => router.push('/signin')}
+                        >
+                                <UserRound style={{
+                                        outline: '1px solid #333',
+                                        outlineOffset: '8px',
+                                        borderRadius: '50%'
+                                    }}
+                                size={'1.5rem'} />
+                        </button>
+
+                        <p style={{
+                            fontSize: 'clamp(0.2rem, 1rem, 1rem)',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            marginTop: '4px'
+                        }}>
+                            {username}
+                        </p>
+                    </div>
 
                     <ul style={{
-                        padding: 0,
+                        marginTop: '5rem',
                         display: 'flex',
                         listStyle: 'none',
                         flexDirection: 'column',
