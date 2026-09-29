@@ -8,6 +8,7 @@ import { supabase } from '@/lib/supabase'
 import { Workout } from '@/lib/types'
 import { toLocalDateString, formatDateForDisplay } from '@/lib/date'
 import Modal from '@/components/Modal'
+import WorkoutCard from '@/components/WorkoutCard'
 
 export default function Calendar() {
     const [selectedDay, setSelectedDay] = useState<Date | null>(null)
@@ -106,12 +107,29 @@ export default function Calendar() {
                 isOpen={showWorkouts}
                 onClose={() => setShowWorkouts(false)}
             >
-                <h1>
+                <h1 style={{ paddingBottom: '1rem' }}>
                     Workouts for
                     {selectedDay &&
                         ' ' + formatDateForDisplay(toLocalDateString(selectedDay))
                     }
                 </h1>
+
+                {selectedDayWorkouts.length === 0 && <p>No workouts</p>}
+                {selectedDayWorkouts.map((w) => (
+                    <WorkoutCard
+                        key={w.id}
+                        workout={w}
+                        isSelected={false}
+                        onToggleSelect={() => {return}}
+                        onCompleted={(id, completed) => {
+                            setWorkouts(
+                            selectedDayWorkouts.map((w) => 
+                                w.id === id ? { ...w, completed } : w
+                            )
+                            )
+                        }}
+                    />
+                ))}
             </Modal>
         </>
     )
