@@ -114,22 +114,29 @@ export default function Calendar() {
                     }
                 </h1>
 
-                {selectedDayWorkouts.length === 0 && <p>No workouts</p>}
-                {selectedDayWorkouts.map((w) => (
-                    <WorkoutCard
-                        key={w.id}
-                        workout={w}
-                        isSelected={false}
-                        onToggleSelect={() => {return}}
-                        onCompleted={(id, completed) => {
-                            setWorkouts(
-                            selectedDayWorkouts.map((w) => 
-                                w.id === id ? { ...w, completed } : w
-                            )
-                            )
-                        }}
-                    />
-                ))}
+                <div style={{
+                    padding: '1rem',
+                    width: 'clamp(200px, 50vw, 500px)',
+                    maxHeight: 'clamp(200px, 50vh, 500px)',
+                    overflow: 'auto'
+                }}>
+                    {selectedDayWorkouts.length === 0 && <p>No workouts</p>}
+                    {selectedDayWorkouts.map((w) => (
+                        <WorkoutCard
+                            key={w.id}
+                            workout={w}
+                            isSelected={false}
+                            onToggleSelect={() => {return}}
+                            onCompleted={(id, completed) => {
+                                setWorkouts(
+                                selectedDayWorkouts.map((w) => 
+                                    w.id === id ? { ...w, completed } : w
+                                )
+                                )
+                            }}
+                        />
+                    ))}
+                </div>
             </Modal>
         </>
     )

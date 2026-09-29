@@ -24,7 +24,10 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
                 <div onClick={(e) => e.stopPropagation()} style={{
                     padding: '2rem',
                     backgroundColor: '#171717',
-                    borderRadius: '20px'
+                    borderRadius: '20px',
+                    maxWidth: 'clamp(25px, 100%, 90vw)',
+                    maxHeight: 'clamp(25px, 100%, 90vh)',
+                    overflow: 'clip'
                 }}>
                     {children}
                 </div>
