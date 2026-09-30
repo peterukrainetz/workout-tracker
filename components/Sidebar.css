@@ -1,0 +1,6 @@
+.ticker-text {
+    white-space: nowrap;
+    font-size: 1rem;
+    overflow: hidden;
+    margin-top: 4px;
+}

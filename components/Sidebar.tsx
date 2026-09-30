@@ -10,9 +10,9 @@ import {
     UserRound, Plus, House,
     NotebookText, Weight,
     CalendarDays, Medal,
-    Calculator, Timer,
-    Pointer
+    Calculator, Timer
 } from 'lucide-react'
+import './Sidebar.css'
 
 type SidebarProps = {
     isExpanded: boolean
@@ -21,6 +21,7 @@ type SidebarProps = {
 
 export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
     const [showWorkoutPicker, setShowWorkoutPicker] = useState(false)
+    const [showUserOptions, setShowUserOptions] = useState(false)
     const { user, username } = useAuth()
     const router = useRouter()
 
@@ -29,12 +30,17 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
+        setShowUserOptions(false)
+        router.push('/')
     }
 
     return (
         <>
             <div onMouseEnter={() => setIsExpanded(true)}
-                onMouseLeave={() => setIsExpanded(false)}
+                onMouseLeave={() => {
+                    setIsExpanded(false)
+                    setShowUserOptions(false)
+                }}
                 style={{ position: 'fixed', zIndex: 500 }}
             >
                 <nav style={{
@@ -51,7 +57,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                     transition: 'width 0.2s ease-in-out',
                     overflowX: 'hidden'
                 }}>
-                    <div style={{ display: 'flex' }}>
+                    <div style={{ display: 'flex', width: '100%' }}>
                         <button style={{
                                 justifySelf: 'center',
                                 paddingRight: '3rem',
@@ -59,7 +65,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                                 height: '2rem',
                                 cursor: 'pointer'
                             }}
-                            onClick={() => router.push('/signin')}
+                            onClick={() => setShowUserOptions(!showUserOptions)}
                         >
                                 <UserRound style={{
                                         outline: '1px solid #333',
@@ -69,22 +75,59 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                                 size={'1.5rem'} />
                         </button>
 
-                        <p style={{
-                            fontSize: 'clamp(0.2rem, 1rem, 1rem)',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            marginTop: '4px'
-                        }}>
-                            {username}
-                        </p>
+                        <div style={{ overflow: 'hidden' }}>
+                            <p className='ticker-text' style={{
+                                textOverflow: user ? 'ellipsis' : undefined
+                            }}>
+                                {username}
+                            </p>
+                        </div>
                     </div>
 
+                    {showUserOptions && (user ? (
+                        <button style={{
+                                whiteSpace: 'nowrap',
+                                width: '2.25rem',
+                                height: '2rem',
+                                marginTop: '0.3rem',
+                                cursor: 'pointer'
+                        }}
+                        onClick={handleLogout}
+                        >
+                            Sign Out
+                        </button>
+                    ) : (
+                        <>
+                            <button style={{
+                                    whiteSpace: 'nowrap',
+                                    width: '2.25rem',
+                                    marginTop: '0.3rem',
+                                    cursor: 'pointer'
+                            }}
+                            onClick={() => router.push('/signin')}
+                            >
+                                Sign In
+                            </button>
+
+                            <button style={{
+                                    whiteSpace: 'nowrap',
+                                    width: '2.25rem',
+                                    cursor: 'pointer'
+                            }}
+                            onClick={() => router.push('/signup')}
+                            >
+                                Sign Up
+                            </button>
+                        </>
+                    ))}
+
                     <ul style={{
-                        marginTop: '5rem',
+                        position: 'absolute',
+                        top: '20vh',
                         display: 'flex',
                         listStyle: 'none',
                         flexDirection: 'column',
-                        alignItems: 'flex-start',
+                        alignItems: 'flex-start'
                     }}>
                         <Link href="/signup"></Link>
                         <li>
