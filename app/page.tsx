@@ -7,11 +7,13 @@ import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { Workout } from '@/lib/types'
 import WorkoutCard from '@/components/WorkoutCard'
+import ActionBar from '@/components/ActionBar'
 
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [upcomingWorkouts, setUpcomingWorkouts] = useState<Workout[]>([])
   const [selectedWorkouts, setSelectedWorkouts] = useState<Set<number>>(new Set())
+  const [error, setError] = useState('')
   const { user, username } = useAuth()
 
   useEffect(() => {
@@ -61,53 +63,94 @@ export default function Dashboard() {
 
     setWorkouts(sortedRecent)
     setUpcomingWorkouts(sortedUpcoming)
-
-      
   }
 
-  return (
-    <div style={{ padding: '2rem' }}>
-      {user ? <h1>Hello, {username}!</h1> : <h1>You are not signed in.</h1>}
+  const handleBulkDelete = async () => {
+      const { error: deleteError } = await supabase
+        .from('logged_workouts')
+        .delete()
+        .in('id', [...selectedWorkouts])
 
-      <h2 style={{ paddingLeft: '2rem' }}>Recent Workouts</h2>
-        <div style={{ padding: '1rem',
-          border: '2px solid #ffffff',
-          borderRadius: '20px',
-          marginBottom: '1rem',
-          width: 'fit-content'
-        }}>
-          {workouts.length === 0 && <p>No recent workouts. Add a workout using the sidebar.</p>}
-          {workouts.map((w) => (
+      if (deleteError)
+      {
+        setError(deleteError.message)
+        return
+      }
+
+      setWorkouts(workouts.filter((w) => !selectedWorkouts.has(w.id)))
+      setUpcomingWorkouts(upcomingWorkouts.filter((w) => !selectedWorkouts.has(w.id)))
+      setSelectedWorkouts(new Set())
+    }
+
+  return (
+    <>
+      <div style={{ padding: '2rem' }}>
+        {user ? <h1>Hello, {username}!</h1> : <h1>You are not signed in.</h1>}
+
+        <p>{error}</p>
+
+        <h2 style={{ paddingLeft: '2rem' }}>Recent Workouts</h2>
+          <div style={{ padding: '1rem',
+            border: '2px solid #ffffff',
+            borderRadius: '20px',
+            marginBottom: '1rem',
+            width: 'fit-content'
+          }}>
+            {workouts.length === 0 && <p>No recent workouts. Add a workout using the sidebar.</p>}
+            {workouts.map((w) => (
+                <WorkoutCard
+                  key={w.id}
+                  workout={w}
+                  isSelected={selectedWorkouts.has(w.id)}
+                  onToggleSelect={() => {
+                    setSelectedWorkouts((prev) => {
+                      const next = new Set(prev)
+                      if (next.has(w.id)) next.delete(w.id)
+                      else next.add(w.id)
+                      return next
+                    })
+                  }}
+                  onCompleted={(id, completed) => handleWorkoutCompletionChange(id, completed)}
+                />
+            ))}
+            {workouts.length !== 0 && <p><Link href="/workouts">See all</Link></p>}
+          </div>
+
+        <h2 style={{ paddingLeft: '2rem' }}>Upcoming Workouts</h2>
+          <div style={{ padding: '1rem',
+            border: '2px solid #ffffff',
+            borderRadius: '20px',
+            marginBottom: '1rem',
+            width: 'fit-content'
+          }}>
+            {upcomingWorkouts.length === 0 && <p>No upcoming workouts. Add a workout using the sidebar.</p>}
+              {upcomingWorkouts.map((w) => (
               <WorkoutCard
                 key={w.id}
                 workout={w}
-                isSelected={false}
-                onToggleSelect={() => {return}}
+                isSelected={selectedWorkouts.has(w.id)}
+                onToggleSelect={() => {
+                  setSelectedWorkouts((prev) => {
+                    const next = new Set(prev)
+                    if (next.has(w.id)) next.delete(w.id)
+                    else next.add(w.id)
+                    return next
+                  })
+                }}
                 onCompleted={(id, completed) => handleWorkoutCompletionChange(id, completed)}
               />
-          ))}
-          {workouts.length !== 0 && <p><Link href="/workouts">See all</Link></p>}
-        </div>
+            ))}
+            {upcomingWorkouts.length !== 0 && <p><Link href="/workouts">See all</Link></p>}
+          </div>
+      </div>
 
-      <h2 style={{ paddingLeft: '2rem' }}>Upcoming Workouts</h2>
-        <div style={{ padding: '1rem',
-          border: '2px solid #ffffff',
-          borderRadius: '20px',
-          marginBottom: '1rem',
-          width: 'fit-content'
-        }}>
-          {upcomingWorkouts.length === 0 && <p>No upcoming workouts. Add a workout using the sidebar.</p>}
-            {upcomingWorkouts.map((w) => (
-            <WorkoutCard
-              key={w.id}
-              workout={w}
-              isSelected={false}
-              onToggleSelect={() => {return}}
-              onCompleted={(id, completed) => handleWorkoutCompletionChange(id, completed)}
-            />
-          ))}
-          {upcomingWorkouts.length !== 0 && <p><Link href="/workouts">See all</Link></p>}
-        </div>
-    </div>
+      <ActionBar
+        count={selectedWorkouts.size}
+        onMarkComplete={() => {return}}
+        onDuplicate={() => {return}}
+        onDelete={() => handleBulkDelete()}
+        onDeselect={() => setSelectedWorkouts(new Set())}
+      />
+    </>
   )
 }
