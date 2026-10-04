@@ -65,6 +65,36 @@ export default function Dashboard() {
     setUpcomingWorkouts(sortedUpcoming)
   }
 
+  const handleBulkComplete = async () => {
+      const { error: updateError } = await supabase
+        .from('logged_workouts')
+        .update({ completed: true })
+        .in('id', [...selectedWorkouts])
+
+      if (updateError)
+      {
+        setError(updateError.message)
+        return
+      }
+
+      const allWorkouts = [...workouts, ...upcomingWorkouts]
+
+      const updatedSelected = allWorkouts
+        .filter((w) => selectedWorkouts.has(w.id))
+        .map((w) => ({ ...w, completed: true }))
+
+      const untouched = allWorkouts.filter((w) => !selectedWorkouts.has(w.id))
+
+      const today = toLocalDateString(new Date())
+      const newRecent = [...untouched.filter((w) => w.date < today || w.completed), ...updatedSelected]
+      const newUpcoming = [...untouched.filter((w) => w.date >= today && !w.completed)]
+
+      setWorkouts([...newRecent].sort((a, b) => b.date.localeCompare(a.date)))
+      setUpcomingWorkouts([...newUpcoming].sort((a, b) => a.date.localeCompare(b.date)))
+
+      setSelectedWorkouts(new Set())
+    }
+
   const handleBulkDelete = async () => {
       const { error: deleteError } = await supabase
         .from('logged_workouts')
@@ -146,7 +176,7 @@ export default function Dashboard() {
 
       <ActionBar
         count={selectedWorkouts.size}
-        onMarkComplete={() => {return}}
+        onMarkComplete={() => handleBulkComplete()}
         onDuplicate={() => {return}}
         onDelete={() => handleBulkDelete()}
         onDeselect={() => setSelectedWorkouts(new Set())}
