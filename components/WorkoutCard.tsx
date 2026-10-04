@@ -39,8 +39,16 @@ export default function WorkoutCard({ workout, isSelected, onToggleSelect, onCom
         <div className='transition-transform duration-300 ease-in-out hover:scale-105' style={{
             border: '2px solid',
             borderRadius: '20px',
-            borderColor: workout.completed ? 'rgb(0, 102, 36)' : '#333',
-            backgroundColor: workout.completed ? 'rgb(0, 138, 92)' : undefined,
+            borderColor: isSelected
+                ? 'rgb(0, 41, 102)'
+                : workout.completed
+                    ? 'rgb(0, 102, 36)'
+                    : '#333',
+            backgroundColor: isSelected
+                ? 'rgb(0, 102, 255)'
+                : workout.completed 
+                    ? 'rgb(0, 138, 92)'
+                    : undefined,
             marginBottom: '1rem',
             maxWidth: '400px',
         }}>
@@ -62,7 +70,15 @@ export default function WorkoutCard({ workout, isSelected, onToggleSelect, onCom
                         paddingRight: '1rem',
                         cursor: 'pointer'
                     }}>
-                        <Circle size={'1rem'}/>
+                        <Circle
+                            size={'1rem'}
+                            fill={isSelected
+                                ? 'white'
+                                : workout.completed
+                                    ? 'rgb(0, 138, 92)'
+                                    : undefined
+                            }
+                        />
                     </button>
 
                     <div style={{ flex: '1' }}>
