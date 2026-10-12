@@ -144,7 +144,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                             <Link href="/">
                                 <div style={{ display: 'flex' }}>
                                     <House size={'1.5rem'} />
-                                    <p style={descStyle}>Dashboard</p>
+                                    <p style={descStyle}>Home</p>
                                 </div>
                             </Link>
                         </li>
@@ -172,6 +172,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                                 </div>
                             </Link>
                         </li>
+                        {/*
                         <li style={liStyle}>
                             <Link href="/goals">
                                 <div style={{ display: 'flex' }}>
@@ -196,6 +197,7 @@ export default function Sidebar({ isExpanded, setIsExpanded }: SidebarProps) {
                                 </div>
                             </Link>
                         </li>
+                        */}
                     </ul>
                 </nav>
             </div>
