@@ -70,6 +70,30 @@ export default function CreateWorkoutPage() {
             return
         }
 
+        if (draftSets.some((s) => s.exercise_id === null))
+        {
+            setError('Each set must have an exercise')
+            return
+        }
+
+        if (draftSets.some((s) => s.weight === null))
+        {
+            setError('Each set must have a weight')
+            return
+        }
+
+        if (draftSets.some((s) => s.reps === null))
+        {
+            setError('Each set must have reps')
+            return
+        }
+
+        if (draftSets.length === 0)
+        {
+            setError('Workout must contain at least one set')
+            return
+        }
+
         // Add new row to workout table (NOT logged_sets yet)
         const { data: workout, error: insertError } = await supabase
             .from('logged_workouts')
@@ -105,6 +129,7 @@ export default function CreateWorkoutPage() {
         if (saveError)
         {
             setError(saveError.message)
+            await supabase.from('logged_workouts').delete().eq('id', workout.id)
             return
         }
 

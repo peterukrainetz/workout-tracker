@@ -22,6 +22,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
                 zIndex: 1000
             }}>
                 <div onClick={(e) => e.stopPropagation()} style={{
+                    position: 'fixed',
                     padding: '2rem',
                     backgroundColor: '#171717',
                     borderRadius: '20px',

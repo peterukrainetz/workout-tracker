@@ -68,6 +68,30 @@ export default function CreateTemplatePage() {
             return
         }
 
+        if (draftSets.some((s) => s.exercise_id === null))
+        {
+            setError('Each set must have an exercise')
+            return
+        }
+
+        if (draftSets.some((s) => s.weight === null))
+        {
+            setError('Each set must have a weight')
+            return
+        }
+
+        if (draftSets.some((s) => s.reps === null))
+        {
+            setError('Each set must have reps')
+            return
+        }
+
+        if (draftSets.length === 0)
+        {
+            setError('Template must contain at least one set')
+            return
+        }
+
         // Add new row to workout table (NOT logged_sets yet)
         const { data: workout, error: insertError } = await supabase
             .from('workout_templates')

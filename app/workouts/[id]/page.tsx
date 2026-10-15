@@ -165,6 +165,30 @@ export default function EditWorkoutPage() {
             return
         }
 
+        if (draftSets.some((s) => s.exercise_id === null))
+        {
+            setError('Each set must have an exercise')
+            return
+        }
+
+        if (draftSets.some((s) => s.weight === null))
+        {
+            setError('Each set must have a weight')
+            return
+        }
+
+        if (draftSets.some((s) => s.reps === null))
+        {
+            setError('Each set must have reps')
+            return
+        }
+
+        if (draftSets.length === 0)
+        {
+            setError('Workout must contain at least one set')
+            return
+        }
+
         // Update workout name and date independently from rows
         const { error: updateError } = await supabase
             .from('logged_workouts')

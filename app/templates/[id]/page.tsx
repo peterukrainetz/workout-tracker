@@ -160,6 +160,30 @@ export default function EditTemplatePage() {
             return
         }
 
+        if (draftSets.some((s) => s.exercise_id === null))
+        {
+            setError('Each set must have an exercise')
+            return
+        }
+
+        if (draftSets.some((s) => s.weight === null))
+        {
+            setError('Each set must have a weight')
+            return
+        }
+
+        if (draftSets.some((s) => s.reps === null))
+        {
+            setError('Each set must have reps')
+            return
+        }
+
+        if (draftSets.length === 0)
+        {
+            setError('Template must contain at least one set')
+            return
+        }
+
         // Update workout name and description independently from rows
         const { error: updateError } = await supabase
             .from('workout_templates')

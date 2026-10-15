@@ -9,12 +9,17 @@ import { Workout } from '@/lib/types'
 import { toLocalDateString, formatDateForDisplay } from '@/lib/date'
 import Modal from '@/components/Modal'
 import WorkoutCard from '@/components/WorkoutCard'
+import { useAuth } from '@/context/AuthContext' 
+import { useRouter } from 'next/navigation'
 
 export default function Calendar() {
     const [selectedDay, setSelectedDay] = useState<Date | null>(null)
     const [currentMonth, setCurrentMonth] = useState(new Date())
     const [workouts, setWorkouts] = useState<Workout[]>([])
     const [showWorkouts, setShowWorkouts] = useState(false)
+    const [error, setError] = useState('')
+    const { user } = useAuth()
+    const router = useRouter()
 
     useEffect(() => {
         const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
@@ -50,6 +55,30 @@ export default function Calendar() {
         ) : ( 
             []
         )
+
+    const handleAddWorkout = async () => {
+        if (!user) {
+            setError('You must be logged in to instantiate a template')
+            return
+        }
+
+        const { data: workout, error: insertError } = await supabase
+            .from('logged_workouts')
+            .insert({
+                user_id: user.id,
+                date: toLocalDateString(selectedDay!)
+            })
+            .select('id')
+            .single()
+
+        if (insertError)
+        {
+            setError(insertError.message)
+            return
+        }
+
+        router.push(`/workouts/${workout.id}`)
+    }
 
     function CustomDayButton(props: DayButtonProps) {
         const { day, modifiers, ...buttonProps } = props
@@ -113,6 +142,12 @@ export default function Calendar() {
                         ' ' + formatDateForDisplay(toLocalDateString(selectedDay))
                     }
                 </h1>
+
+                <button style={{ position: 'absolute', top: 0, right: 0 }}
+                    onClick={handleAddWorkout}
+                >
+                    Add
+                </button>
 
                 <div style={{
                     padding: '1rem',
