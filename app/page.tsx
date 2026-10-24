@@ -143,15 +143,17 @@ export default function Dashboard() {
         }))
       )
 
-      const { error : setInsertError } = await supabase
-        .from('logged_sets')
-        .insert([...newSets])
+      if (newSets.length > 0) {
+        const { error : setInsertError } = await supabase
+          .from('logged_sets')
+          .insert([...newSets])
 
-      if (setInsertError)
-      {
-        await supabase.from('logged_workouts').delete().in('id', newIds.map((n) => n.id))
-        setError(setInsertError.message)
-        return
+        if (setInsertError)
+        {
+          await supabase.from('logged_workouts').delete().in('id', newIds.map((n) => n.id))
+          setError(setInsertError.message)
+          return
+        }
       }
 
       loadWorkouts()
@@ -219,6 +221,8 @@ export default function Dashboard() {
             {upcomingWorkouts.length !== 0 && <p><Link href="/workouts">See all</Link></p>}
           </div>
       </div>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
       <ActionBar
         count={selectedWorkouts.size}

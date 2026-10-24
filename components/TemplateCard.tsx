@@ -13,10 +13,9 @@ type TemplateCardProps = {
     template: Template
     isSelected: boolean
     onToggleSelect: () => void
-    onInstantiate: () => void
 }
 
-export default function WorkoutCard({ template, isSelected, onToggleSelect, onInstantiate }: TemplateCardProps) {
+export default function WorkoutCard({ template, isSelected, onToggleSelect }: TemplateCardProps) {
     const [showInstantiateModal, setShowInstantiateModal] = useState(false)
     const [instantiateDate, setInstantiateDate] = useState(toLocalDateString(new Date()))
     const [error, setError] = useState('')
@@ -137,6 +136,8 @@ export default function WorkoutCard({ template, isSelected, onToggleSelect, onIn
                     type='date'
                     value={instantiateDate}
                     onChange={(e) => setInstantiateDate(e.target.value)}
+                    required
+                    style={{ colorScheme: 'light dark' }}
                 />
                 <button onClick={handleInstantiate}>Create Workout</button>
                 <p color='red'>{error}</p>
